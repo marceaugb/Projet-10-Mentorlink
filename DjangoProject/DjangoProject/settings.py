@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.admin',
+    'mentorlink',
 ]
 
 MIDDLEWARE = [
@@ -53,7 +55,10 @@ ROOT_URLCONF = 'DjangoProject.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
+        'DIRS': [
+            BASE_DIR / 'templates',
+            r'C:\Users\marce\PycharmProjects\Projet-10-Mentorlink\html'
+        ]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
