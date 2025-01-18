@@ -57,7 +57,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             BASE_DIR / 'templates',
-            r'C:\Users\marce\PycharmProjects\Projet-10-Mentorlink\html'
+            r'//home//marceau/Documents//projet python 1A//Projet-10-Mentorlink-main//html'
         ]
         ,
         'APP_DIRS': True,
