@@ -20,12 +20,11 @@ from django.urls import path
 from mentorlink import views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('home.html', views.home, name='home'),
     path('', views.index, name='index'),
+    path('home.html', views.home, name='home'),
     path('messages.html', views.messages, name='messages'),
     path('search.html', views.search, name='search'),
     path('profil.html', views.profil, name='profil'),
-    path('home.html', views.home, name='home'),
     path('annonce.html', views.annonce, name='annonce'),
     path('annonce-detail1.html', views.annoncedetail, name='annoncedetail'),
 ]
