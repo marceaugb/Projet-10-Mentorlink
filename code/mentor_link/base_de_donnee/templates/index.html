@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afficher table</title>
+</head>
+<body>
+    <h1>"Neque porro quisquam est qui dolorem dolor sit amet, consectetur, adipisci velit..."</h1>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras mattis lectus at gravida efficitur. Maecenas tempus ornare facilisis. Praesent consectetur velit vel magna blandit, at malesuada justo tristique. Donec sollicitudin auctor tortor, sed laoreet nulla pharetra ut. Donec eu pulvinar urna. Aliquam eu odio rhoncus nunc viverra mattis nec ut turpis. Nam porta dolor nulla, vel tempor velit dapibus vitae.
+
+        Curabitur et felis eget mi rutrum ornare. Praesent dui orci, hendrerit nec pretium ac, elementum eget lectus. Fusce scelerisque vehicula efficitur. Morbi nisi neque, faucibus quis posuere eget, tempus at arcu. Nullam lacinia tortor et nunc egestas tincidunt. Curabitur in arcu dolor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In porttitor convallis odio non fermentum. Maecenas in mi tellus. Donec blandit nunc nec nisl fermentum, sit amet luctus justo congue. Vestibulum vulputate ante cursus, tempor purus id, mattis est. Ut malesuada porta hendrerit. Maecenas ac iaculis arcu. Nam commodo vulputate tellus sed hendrerit.</p>
+
+    <!-- Liste des personnes -->
+    <h2>Liste des Utilisateurs</h2>
+    <ul>
+        {% for personne in personnes %}
+            <li>{{ personne.nom }} {{ personne.prenom }}</li>
+        {% empty %}
+            <li>No users found.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Liste des annonces -->
+    <h2>Liste des Annonces</h2>
+    <ul>
+        {% for annonce in annonces %}
+            <li>
+                <strong>Nom:</strong> {{ annonce.nom }} {{ annonce.prenom }}<br>
+                <strong>Âge:</strong> {{ annonce.age }} ans<br>
+                <strong>Prix:</strong> {{ annonce.prix }} €<br>
+                <strong>Métier:</strong> {{ annonce.metier }}<br>
+                <strong>Adresse:</strong> {{ annonce.adresse }}<br>
+                <img src="{{ annonce.url_photo }}" alt="Photo" width="100">
+            </li>
+            <hr>
+        {% empty %}
+            <li>Aucune annonce trouvée.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Footer section -->
+    <footer>
+        <p>&copy; 2025 Your Company. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
