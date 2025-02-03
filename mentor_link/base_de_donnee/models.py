@@ -34,16 +34,12 @@ class Utilisateur(models.Model):
 class Annonces(models.Model):
 
     id = models.IntegerField(primary_key=True)
-    nom = models.CharField(max_length=100)
-    prenom = models.CharField(max_length=100)
-    age = models.IntegerField()
     prix = models.IntegerField()
     url_photo = models.CharField(max_length=1000)
     metier = models.CharField(max_length=1000)
     adresse = models.TextField()
+    id_personnes = models.ForeignKey('Utilisateur', on_delete=models.CASCADE, null=True, blank=True)
     
 
     def __str__(self):
         return (f"Métier= {self.metier}, Prix= {self.prix}, Adresse= {self.adresse}")
-
-
