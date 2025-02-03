@@ -16,17 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from base_de_donnee.views import index
-from mentorlink import views
+from base_de_donnee import views
 
 
 urlpatterns = [
     #path('', index, name='index'),  # Page d'accueil
-    path('', views.index_home, name='index_home'),  # Page d'accueil
-    path('messages/', views.messages, name='messages'),  # Page des messages
-    path('search/', views.search, name='search'),  # Page de recherche
-    path('profil/', views.profil, name='profil'),  # Page de profil
-    path('annonce/', views.annonce, name='annonce'),  # Page des annonces
-    path('annoncedetail/', views.annoncedetail, name='annoncedetail'),  # Page des détails de l'annonce
+    path('', views.index_home, name='index_home'),
+    path('messages/', views.messages, name='messages'),
+    path('search/', views.search, name='search'),
+    path('profil/', views.profil, name='profil'),
+    path('annonce/', views.annonce, name='annonce'),
+    path('annoncedetail/', views.annoncedetail, name='annoncedetail'),
     path('home/', views.home, name='home'),
 ]
