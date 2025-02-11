@@ -38,6 +38,7 @@ class Annonces(models.Model):
     url_photo = models.CharField(max_length=1000)
     metier = models.CharField(max_length=1000)
     adresse = models.TextField()
+    description = models.TextField(max_length=100000, null=True, blank=True)
     id_personnes = models.ForeignKey('Utilisateur', on_delete=models.CASCADE, null=True, blank=True)
     
 
