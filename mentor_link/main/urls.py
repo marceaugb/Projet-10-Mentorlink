@@ -20,6 +20,7 @@ from app_mentorlink import views
 
 
 urlpatterns = [
+    #path('', views.bdd, name="bdd"),
     path('', views.home, name='home'),
     path('messages/', views.messages, name='messages'),
     path('search/', views.search, name='search'),
@@ -30,4 +31,6 @@ urlpatterns = [
     path('logsign/', views.logsign, name='logsign'),  # Page log ou sign in
     path('signin/', views.signin, name='signin'),  # Page sign in
     path('login/', views.login, name='login'),  # Page log in
+    path('depose_annonce/', views.depose_annonce, name='depose_annonce'),
+    path('confirmation/', views.confirmation, name='confirmation'),  # Optionnel
 ]
