@@ -1,0 +1,25 @@
+<h2>Liste des annonces :</h2>
+<div class="annonce-list">
+
+
+    <ul>
+        {% for annonce in annonces %}
+        <li>
+            <img src="img-user1.jpg" alt="Photo">
+            <img src="{{ annonce.url_photo }}" alt="Photo" width="100">
+            <div>
+                <strong>{{ annonce.metier }}</strong><br>
+                {{ annonce.prix }} € / heure<br>
+                {{ annonce.adresse }}<br>
+                28/11/2024
+            </div>
+
+        </li>
+            <hr>
+        {% empty %}
+            <li>Aucune annonce trouvée.</li>
+        {% endfor %}
+    </ul>
+
+
+</div>

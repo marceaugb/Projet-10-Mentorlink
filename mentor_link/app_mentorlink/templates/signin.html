@@ -1,0 +1,20 @@
+<!-- templates/partials/sign_in_form.html -->
+<h2>Sign in</h2>
+<form
+  hx-post="{% url 'signin' %}"
+  hx-target="#htmx-content"
+  hx-swap="innerHTML"
+  method="POST"
+>
+  {% csrf_token %}
+  <div>
+    <label for="id_email">Adresse Email *</label>
+    <input type="email" name="email" id="id_email" required>
+  </div>
+  <div>
+    <label for="id_password">Mot de passe *</label>
+    <input type="password" name="password" id="id_password" required>
+  </div>
+  <!-- Vous pouvez ajouter d’autres champs, comme prénom/nom, etc. -->
+  <button type="submit">S’inscrire</button>
+</form>

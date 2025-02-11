@@ -1,0 +1,19 @@
+<!-- templates/partials/login_form.html -->
+<h2>Log in</h2>
+<form
+  hx-post="{% url 'login' %}"
+  hx-target="#htmx-content"
+  hx-swap="innerHTML"
+  method="POST"
+>
+  {% csrf_token %}
+  <div>
+    <label for="id_email">Email</label>
+    <input type="text" name="email" id="id_email" required>
+  </div>
+  <div>
+    <label for="id_password">Mot de passe</label>
+    <input type="password" name="password" id="id_password" required>
+  </div>
+  <button type="submit">Se connecter</button>
+</form>
