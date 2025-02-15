@@ -4,23 +4,24 @@
 
 {% block content %}
 
-<h2>Log in</h2>
+<h2>Sign up</h2>
 <form
-  hx-post="{% url 'login' %}"
+  hx-post="{% url 'signup' %}"
   hx-target="#htmx-content"
   hx-swap="innerHTML"
   method="POST"
 >
   {% csrf_token %}
   <div>
-    <label for="id_email">Adresse email</label>
-    <input type="text" name="email" id="id_email" required>
+    <label for="id_email">Adresse email *</label>
+    <input type="email" name="email" id="id_email" required>
   </div>
   <div>
-    <label for="id_password">Mot de passe</label>
+    <label for="id_password">Mot de passe *</label>
     <input type="password" name="password" id="id_password" required>
   </div>
-  <button type="submit">Se connecter</button>
+  <!-- Vous pouvez ajouter d’autres champs, comme prénom/nom, etc. -->
+  <button type="submit">S’inscrire</button>
 </form>
 
 {% endblock %}
