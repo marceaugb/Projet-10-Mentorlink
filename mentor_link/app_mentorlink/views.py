@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import Utilisateur, Annonces
 from django.contrib.auth.decorators import login_required
+from .forms import AnnonceForm
 
 def bdd(request):
     personnes = Utilisateur.objects.all()
