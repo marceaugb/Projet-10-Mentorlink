@@ -21,7 +21,7 @@ class Utilisateur(models.Model):
     adresse = models.TextField()
     role = models.CharField(max_length=14, choices=TYPE_CHOICES)
 
-    # Optionnel: définir une contrainte de vérification pour l'âge
+    
     class Meta:
         constraints = [
             models.CheckConstraint(check=models.Q(age__gt=15), name='age_greater_than_15'),
