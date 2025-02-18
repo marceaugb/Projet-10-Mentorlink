@@ -27,7 +27,9 @@ urlpatterns = [
     path('depose_annonce/', views.depose_annonce, name='depose_annonce'),
     path('annoncedetail/', views.annoncedetail, name='annoncedetail'),
     path('liste_annonce/', views.liste_annonce, name='liste_annonce'),
-    path('signup/', views.signup, name='signup'),  # Page sign in
-    path('login/', views.login, name='login'),  # Page log in
+    path('signup/', views.signup, name='signup'),
+    path('login/', views.login, name='login'),
     path('admin/', admin.site.urls),
+    path('depose_annonce/', views.depose_annonce, name='depose_annonce'),
+    path('confirmation/', views.confirmation, name='confirmation'),
 ]
