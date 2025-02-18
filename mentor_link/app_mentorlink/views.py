@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Utilisateur, Annonces
 from django.contrib.auth.decorators import login_required
 from .forms import AnnonceForm
