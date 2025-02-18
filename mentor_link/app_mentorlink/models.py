@@ -30,7 +30,6 @@ class Utilisateur(models.Model):
     def __str__(self):
         return (f"Id:{self.id}, Nom :{self.nom}, Prénom:{self.prenom}, Age:{self.age}, Genre:{self.genre}, Adresse:{self.adresse}, Type:{self.role}")
 
-
 class Annonces(models.Model):
 
     id = models.IntegerField(primary_key=True)
@@ -38,6 +37,7 @@ class Annonces(models.Model):
     url_photo = models.CharField(max_length=1000)
     metier = models.CharField(max_length=1000)
     adresse = models.TextField()
+    description = models.TextField(max_length=100000, null=True, blank=True)
     id_personnes = models.ForeignKey('Utilisateur', on_delete=models.CASCADE, null=True, blank=True)
     
 
