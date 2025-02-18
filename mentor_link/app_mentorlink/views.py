@@ -23,6 +23,22 @@ def depose_annonce(request):
 def messages(request):
    return render(request,'messages.html')
 
+
+def depose_annonce(request):
+    if request.method == 'POST':
+        form = AnnonceForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('confirmation')  # Redirige vers une page de confirmation ou d'accueil
+    else:
+        form = AnnonceForm()
+    return render(request, 'depose_annonce.html', {'form': form})
+
+
+def confirmation(request):
+    return render(request, 'confirmation.html')
+
+
 @login_required
 def search(request):
    return render(request,'search.html')
@@ -49,3 +65,17 @@ def annoncedetail(request):
 
 def annoncedetaix(request):
    return render(request,'annonce_detailx.html')
+    
+def depose_annonce(request):
+    if request.method == 'POST':
+        form = AnnonceForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('confirmation')  # Redirige vers une page de confirmation ou d'accueil
+    else:
+        form = AnnonceForm()
+    return render(request, 'depose_annonce.html', {'form': form})
+
+
+def confirmation(request):
+    return render(request, 'confirmation.html')
