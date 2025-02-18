@@ -3,84 +3,111 @@
 {% block title %}Mentorlink - Déposer une annonce{% endblock %}
 
 {% block content %}
-
-    <h2>Déposez votre annonce :</h2>
-
-    <div class="form-group">
-        <label>Quel est le métier concerné par l'annonce ?</label>
-        <input type="text" id="metier-input" name="metier" maxlength="100" />
-        <small id="metier-counter">0/100</small>
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-lg p-4" style="width: 50rem;">
+        <h2 class="text-center mb-4 text-primary">Déposez votre annonce</h2>
+        <form method="POST" action="" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.prix.label_tag }}
+                {{ form.prix }}
+                <small id="prixCount" class="form-text text-muted">0 caractères (max 10)</small>
+            </div>
+            <div class="form-group">
+                {{ form.url_photo.label_tag }}
+                {{ form.url_photo }}
+                <small id="urlPhotoCount" class="form-text text-muted">0 caractères (max 255)</small>
+            </div>
+            <div class="form-group">
+                {{ form.metier.label_tag }}
+                {{ form.metier }}
+                <small id="metierCount" class="form-text text-muted">0 caractères (max 50)</small>
+            </div>
+            <div class="form-group">
+                {{ form.adresse.label_tag }}
+                {{ form.adresse }}
+                <small id="adresseCount" class="form-text text-muted">0 caractères (max 100)</small>
+            </div>
+            <div class="form-group">
+                {{ form.description.label_tag }}
+                {{ form.description }}
+                <small id="descriptionCount" class="form-text text-muted">0 caractères (max 500)</small>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-orange btn-lg mt-3">Publier l'annonce</button>
+            </div>
+        </form>
     </div>
+</div>
 
-    <div class="form-group">
-        <label>Description de l'annonce</label>
-        <textarea id="description-input" name="description" maxlength="4000" oninput="autoResizeTextarea(this)"></textarea>
-        <small id="description-counter">0/4000</small>
-    </div>
+<style>
+    body {
+        background: #ffffff;
+        color: #333;
+        font-family: 'Arial', sans-serif;
+    }
+    .card {
+        border-radius: 15px;
+        background: #ffffff;
+        color: #333;
+    }
+    .btn-orange {
+        background-color: #ff9800;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 18px;
+        color: white;
+    }
+    .btn-orange:hover {
+        background-color: #e68900;
+    }
+    h2 {
+        font-weight: bold;
+    }
+    .form-group label {
+        font-weight: bold;
+        color: #333;
+    }
+</style>
 
-    <div class="form-group">
-        <label>Prix de l'heure (en €)</label>
-        <input type="text" id="prix-input" name="metier" maxlength="5" />
-        <small id="prix-counter">0/5</small>
-    </div>
-
-    <div class="form-group">
-        <label>adresse</label>
-        <textarea id="adresse-input" name="description" maxlength="200" oninput="autoResizeTextarea(this)"></textarea>
-        <small id="adresse-counter">0/200</small>
-    </div>
-
-    <div class="form-group">
-        <label>possibilité de faire la rencontre en visio</label>
-        <input type="radio" name="visio" value="true" checked> oui
-        <input type="radio" name="visio" value="false"> non
-    </div>
-
-    <div class="form-actions">
-        <button>Publier l'annonce</button>
-    </div>
-
-    <script>
-
-      const metierInput = document.getElementById('metier-input');
-      const metierCounter = document.getElementById('metier-counter');
-      const descriptionInput = document.getElementById('description-input');
-      const descriptionCounter = document.getElementById('description-counter');
-      const prixInput = document.getElementById('prix-input');
-      const prixCounter = document.getElementById('prix-counter');
-      const adresseInput = document.getElementById('adresse-input');
-      const adresseCounter = document.getElementById('adresse-counter');
-
-      // permet de calculer le nombre de caractères restant
-
-      metierInput.addEventListener('input', () => {
-        const currentLength = metierInput.value.length;
-        metierCounter.textContent = `${currentLength}/100`;
-      });
-
-
-      descriptionInput.addEventListener('input', () => {
-        const currentLength = descriptionInput.value.length;
-        descriptionCounter.textContent = `${currentLength}/4000`;
-      });
-
-
-      prixInput.addEventListener('input', () => {
-        const currentLength = prixInput.value.length;
-        prixCounter.textContent = `${currentLength}/5`;
-      });
-
-
-      adresseInput.addEventListener('input', () => {
-        const currentLength = adresseInput.value.length;
-        adresseCounter.textContent = `${currentLength}/200`;
-      });
-
-      // ajuste les rubriques en fonction de la taille du texte
-      function autoResizeTextarea(textarea) {
-        textarea.style.height = 'auto';  // Remet la hauteur à auto avant de l'ajuster
-        textarea.style.height = `${textarea.scrollHeight}px`;  // Ajuste la hauteur en fonction du contenu
-      }
-    </script>
+<script>
+    function updateCharacterCount(fieldId, counterId, maxLength) {
+        let inputField = document.getElementById(fieldId);
+        let charCount = document.getElementById(counterId);
+        let length = inputField.value.length;
+        charCount.textContent = length + " caractères (max " + maxLength + ")";
+        if (length > maxLength) {
+            charCount.style.color = "red";
+            inputField.value = inputField.value.substring(0, maxLength);
+        } else {
+            charCount.style.color = "black";
+        }
+    }
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("id_prix").setAttribute("maxlength", "10");
+        document.getElementById("id_url_photo").setAttribute("maxlength", "255");
+        document.getElementById("id_metier").setAttribute("maxlength", "50");
+        document.getElementById("id_adresse").setAttribute("maxlength", "100");
+        document.getElementById("id_description").setAttribute("maxlength", "500");
+        
+        document.getElementById("id_prix").addEventListener("input", function() {
+            updateCharacterCount("id_prix", "prixCount", 10);
+        });
+        document.getElementById("id_url_photo").addEventListener("input", function() {
+            updateCharacterCount("id_url_photo", "urlPhotoCount", 255);
+        });
+        document.getElementById("id_metier").addEventListener("input", function() {
+            updateCharacterCount("id_metier", "metierCount", 50);
+        });
+        document.getElementById("id_adresse").addEventListener("input", function() {
+            updateCharacterCount("id_adresse", "adresseCount", 100);
+        });
+        document.getElementById("id_description").addEventListener("input", function() {
+            updateCharacterCount("id_description", "descriptionCount", 500);
+        });
+    });
+</script>
 
 {% endblock %}
