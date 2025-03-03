@@ -48,11 +48,6 @@ python manage.py runserver # il faut être dans le répertoire qui contient le f
 ```
 Le projet sera accessible sur `http://127.0.0.1:8000/`.
 
-### Exécuter les tests
-```bash
-python manage.py test
-```
-
 ---
 
 ## 🛠 Technologies
