@@ -1,4 +1,4 @@
-# 📌 Nom du Projet
+# 📌 Mentor Link
 
 Application web permettant de mettre en liens les mentors et des mentorés dans un espace sécurisé et facile d'utilisation qui vont leurs permettre d'échanger grâce a une
 messagerie en live. L'application fera aussi du scaling.
@@ -17,8 +17,7 @@ messagerie en live. L'application fera aussi du scaling.
 
 ### 1️⃣ Cloner le dépôt
 ```bash
-git clone [https://github.com/utilisateur/](https://github.com/marceaugb/Projet-10-Mentorlink)
-cd mon-projet-django
+git clone https://github.com/marceaugb/Projet-10-Mentorlink
 ```
 
 ### 2️⃣ Créer un environnement virtuel et l'activer
@@ -81,6 +80,7 @@ MENTOR_LINK/
 │   │── admin.py
 │   │── apps.py
 │   │── forms.py
+│   │── tests.py
 │   │── templates/
 |   │── migrations/
 |   │── _pycache_/
