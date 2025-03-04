@@ -1,4 +1,5 @@
 from django.db import models
+import os
 
 class Utilisateur(models.Model):
     GENRE_CHOICES = [
@@ -30,16 +31,26 @@ class Utilisateur(models.Model):
     def __str__(self):
         return (f"Id:{self.id}, Nom :{self.nom}, Prénom:{self.prenom}, Age:{self.age}, Genre:{self.genre}, Adresse:{self.adresse}, Type:{self.role}")
 
-class Annonces(models.Model):
 
+class Annonces(models.Model):
     id = models.IntegerField(primary_key=True)
     prix = models.IntegerField()
-    url_photo = models.CharField(max_length=1000)
+    
+    # Use os.path.join to create a path to the desktop
+    def get_image_path(instance, filename):
+        # This will work cross-platform (Windows, Mac, Linux)
+        desktop_path = os.path.join(os.path.expanduser('~'), 'Desktop', 'mentorlink_photos')
+        
+        # Create the directory if it doesn't exist
+        os.makedirs(desktop_path, exist_ok=True)
+        
+        return os.path.join(desktop_path, filename)
+    
+    image = models.ImageField(upload_to='photos/', null=True, blank=True)
     metier = models.CharField(max_length=1000)
     adresse = models.TextField()
     description = models.TextField(max_length=100000, null=True, blank=True)
     id_personnes = models.ForeignKey('Utilisateur', on_delete=models.CASCADE, null=True, blank=True)
-    
-
+   
     def __str__(self):
         return (f"Métier= {self.metier}, Prix= {self.prix}, Adresse= {self.adresse}")
