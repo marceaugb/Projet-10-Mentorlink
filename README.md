@@ -36,6 +36,7 @@ pip install -r requirements.txt
 
 ### 4️⃣ Configurer la base de données
 ```bash
+python manage.py makemigrations
 python manage.py migrate
 ```
 ---
@@ -48,7 +49,20 @@ python manage.py runserver # il faut être dans le répertoire qui contient le f
 ```
 Le projet sera accessible sur `http://127.0.0.1:8000/`.
 
+### Déposer une annonce
+```
+- Il faut devenir administrateur. Pour ce faire, il faut aller sur : http://127.0.0.1:8000/admin et se connecter en tant qu'administrateur.
+  Identifiant : root  
+  Mot de passe : root  
+
+- Il ne reste plus qu'à revenir sur le menu principal et à cliquer sur "Déposer une annonce".
+
+
+```
+
 ---
+
+
 
 ## 🛠 Technologies
 
