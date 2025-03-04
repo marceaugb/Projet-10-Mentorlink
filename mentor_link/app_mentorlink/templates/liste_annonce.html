@@ -1,27 +1,40 @@
 {% extends "home.html" %}
 
-{% block title %}Mentorlink - Liste des annonces{% endblock %}
+{% block title %}Mentorlink - Liste des Annonces{% endblock %}
 
 {% block content %}
-
-    <h2>Liste des annonces :</h2>
-    <div class="annonce-list">
-        <ul>
+<div class="container mt-5">
+    <h1 class="mb-4">Liste des Annonces</h1>
+    
+    {% if annonces %}
+        <div class="row">
             {% for annonce in annonces %}
-            <li>
-                <img src="img-user1.jpg" alt="Photo">
-                <div>
-                    <strong>{{ annonce.metier }}</strong><br>
-                    {{ annonce.prix }} € / heure<br>
-                    {{ annonce.adresse }}<br>
-                    Annonce de :{{ annonce.id_personnes.nom }} {{ annonce.id_personnes.prenom }}<br>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        {% if annonce.image and annonce.image.url %}
+                            <img src="{{ annonce.image.url }}" class="card-img-top" alt="Image de l'annonce">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex justify-content-center align-items-center" style="height: 200px;">
+                                <span class="text-muted">Pas d'image disponible</span>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ annonce.metier }}</h5>
+                            <p class="card-text">
+                                <strong>Prix :</strong> {{ annonce.prix }} €<br>
+                                <strong>Adresse :</strong> {{ annonce.adresse }}<br>
+                                <strong>Description :</strong> {{ annonce.description|truncatewords:20|default:"Pas de description" }}
+                            </p>
+                            <a href="#" class="btn btn-primary">Voir détails</a>
+                        </div>
+                    </div>
                 </div>
-            </li>
-                <hr>
-            {% empty %}
-                <li>Aucune annonce trouvée.</li>
             {% endfor %}
-        </ul>
-    </div>
-
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            Aucune annonce n'a été publiée pour le moment.
+        </div>
+    {% endif %}
+</div>
 {% endblock %}
