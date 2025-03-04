@@ -52,13 +52,14 @@ def depose_annonce(request):
         description = request.POST.get('description')
         image = request.FILES.get('image')
 
+        """
         # Get the current user's Utilisateur instance
         try:
             utilisateur = Utilisateur.objects.get(id=request.user.id)
         except Utilisateur.DoesNotExist:
             # Handle case where user doesn't have a corresponding Utilisateur
             return render(request, 'error.html', {'message': 'Utilisateur non trouvé'})
-
+        """
         # Create new Annonce
         try:
             nouvelle_annonce = Annonces.objects.create(
@@ -67,7 +68,7 @@ def depose_annonce(request):
                 adresse=adresse,
                 description=description,
                 image=image,
-                id_personnes=utilisateur
+                #id_personnes=utilisateur
             )
             # Redirect to a success page or the list of annonces
             return redirect('liste_annonce')  # Replace with your actual URL name
