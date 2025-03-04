@@ -6,33 +6,38 @@
 <div class="container mt-5 d-flex justify-content-center">
     <div class="card shadow-lg p-4" style="width: 50rem;">
         <h2 class="text-center mb-4 text-primary">Déposez votre annonce</h2>
-        <form method="POST" action="" class="needs-validation" novalidate>
+        <form method="POST" action="" enctype="multipart/form-data" class="needs-validation" novalidate>
             {% csrf_token %}
             <div class="form-group">
-                {{ form.prix.label_tag }}
-                {{ form.prix }}
+                <label for="id_prix">Prix</label>
+                <input type="number" name="prix" id="id_prix" class="form-control" required>
                 <small id="prixCount" class="form-text text-muted">0 caractères (max 10)</small>
             </div>
+
             <div class="form-group">
-                {{ form.url_photo.label_tag }}
-                {{ form.url_photo }}
-                <small id="urlPhotoCount" class="form-text text-muted">0 caractères (max 255)</small>
+                <label for="id_image">Image</label>
+                <input type="file" name="image" id="id_image" accept="image/*" class="form-control-file">
+                <small class="form-text text-muted">Formats acceptés : JPG, PNG, GIF (taille max : 5 Mo)</small>
             </div>
+
             <div class="form-group">
-                {{ form.metier.label_tag }}
-                {{ form.metier }}
+                <label for="id_metier">Métier</label>
+                <input type="text" name="metier" id="id_metier" class="form-control" required>
                 <small id="metierCount" class="form-text text-muted">0 caractères (max 50)</small>
             </div>
+
             <div class="form-group">
-                {{ form.adresse.label_tag }}
-                {{ form.adresse }}
+                <label for="id_adresse">Adresse</label>
+                <textarea name="adresse" id="id_adresse" class="form-control" required></textarea>
                 <small id="adresseCount" class="form-text text-muted">0 caractères (max 100)</small>
             </div>
+
             <div class="form-group">
-                {{ form.description.label_tag }}
-                {{ form.description }}
+                <label for="id_description">Description</label>
+                <textarea name="description" id="id_description" class="form-control"></textarea>
                 <small id="descriptionCount" class="form-text text-muted">0 caractères (max 500)</small>
             </div>
+
             <div class="text-center">
                 <button type="submit" class="btn btn-orange btn-lg mt-3">Publier l'annonce</button>
             </div>
@@ -86,17 +91,26 @@
     }
     
     document.addEventListener("DOMContentLoaded", function() {
+        // Image file size validation
+        document.getElementById("id_image").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            const maxSizeInBytes = 5 * 1024 * 1024; // 5 Mo
+            
+            if (file) {
+                if (file.size > maxSizeInBytes) {
+                    alert("La taille du fichier ne doit pas dépasser 5 Mo.");
+                    event.target.value = ''; // Clear the file input
+                }
+            }
+        });
+
         document.getElementById("id_prix").setAttribute("maxlength", "10");
-        document.getElementById("id_url_photo").setAttribute("maxlength", "255");
         document.getElementById("id_metier").setAttribute("maxlength", "50");
         document.getElementById("id_adresse").setAttribute("maxlength", "100");
         document.getElementById("id_description").setAttribute("maxlength", "500");
         
         document.getElementById("id_prix").addEventListener("input", function() {
             updateCharacterCount("id_prix", "prixCount", 10);
-        });
-        document.getElementById("id_url_photo").addEventListener("input", function() {
-            updateCharacterCount("id_url_photo", "urlPhotoCount", 255);
         });
         document.getElementById("id_metier").addEventListener("input", function() {
             updateCharacterCount("id_metier", "metierCount", 50);
