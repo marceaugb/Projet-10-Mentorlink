@@ -51,13 +51,11 @@ Le projet sera accessible sur `http://127.0.0.1:8000/`.
 
 ### Déposer une annonce
 ```
-- Il faut devenir administrateur. Pour ce faire, il faut aller sur : http://127.0.0.1:8000/admin et se connecter en tant qu'administrateur.
+Il faut devenir administrateur. Pour ce faire, il faut aller sur : http://127.0.0.1:8000/admin et se connecter en tant qu'administrateur.
   Identifiant : root  
   Mot de passe : root  
 
-- Il ne reste plus qu'à revenir sur le menu principal et à cliquer sur "Déposer une annonce".
-
-
+Il ne reste plus qu'à revenir sur le menu principal et à cliquer sur "Déposer une annonce".
 ```
 
 ---
