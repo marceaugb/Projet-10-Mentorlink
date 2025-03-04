@@ -18,6 +18,9 @@ from django.contrib import admin
 from django.urls import path
 from app_mentorlink import views
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -32,4 +35,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('depose_annonce/', views.depose_annonce, name='depose_annonce'),
     path('confirmation/', views.confirmation, name='confirmation'),
+    #path('error/', views.error, name='error'),
+    
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
