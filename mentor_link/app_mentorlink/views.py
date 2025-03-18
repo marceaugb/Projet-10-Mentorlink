@@ -4,14 +4,6 @@ from django.contrib.auth.decorators import login_required
 from .forms import UtilisateurForm, AnnonceForm
 from django.contrib.auth import authenticate, login
 
-
-def bdd(request):
-    personnes = Utilisateur.objects.all()
-    annonces = Annonces.objects.all()
-    context = {'personnes': personnes,'annonces': annonces}
-
-    return render(request, 'bdd.html', context)
-
 def home(request):
     personnes = Utilisateur.objects.all()  # Récupère toutes les personnes
     annonces = Annonces.objects.all()  # Récupère toutes les annonces
