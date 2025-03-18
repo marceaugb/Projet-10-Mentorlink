@@ -25,21 +25,6 @@ def home(request):
 def messages(request):
    return render(request,'messages.html')
 
-"""
-@login_required
-def depose_annonce(request):
-    if request.method == 'POST':
-        form = AnnonceForm(request.POST, request.FILES)  # Important: request.FILES handles file uploads
-        if form.is_valid():
-            form.save()
-            return redirect('confirmation')  # Redirect after successful submission
-    else:
-        form = AnnonceForm()
-
-    return render(request, 'depose_annonce.html', {'form': form})
-"""
-
-
 @login_required
 def depose_annonce(request):
     if request.method == 'POST':
@@ -53,15 +38,6 @@ def depose_annonce(request):
         adresse = request.POST.get('adresse')
         description = request.POST.get('description')
         image = request.FILES.get('image')
-
-        """
-        # Get the current user's Utilisateur instance
-        try:
-            utilisateur = Utilisateur.objects.get(id=request.user.id)
-        except Utilisateur.DoesNotExist:
-            # Handle case where user doesn't have a corresponding Utilisateur
-            return render(request, 'error.html', {'message': 'Utilisateur non trouvé'})
-        """
         # Create new Annonce
         try:
             nouvelle_annonce = Annonces.objects.create(
@@ -82,14 +58,13 @@ def depose_annonce(request):
     # If not a POST request, just render the form
     return render(request, 'depose_annonce.html')
 
+@login_required
 def confirmation(request):
     return render(request, 'confirmation.html')
-
 
 @login_required
 def search(request):
    return render(request,'search.html')
-
 
 @login_required
 def profil(request):
@@ -136,15 +111,6 @@ def loginperso(request):
         else:
             return render(request, 'login.html', {'error': 'Invalid credentials'})
     return render(request, 'login.html')
-
-def annoncedetail(request):
-   return render(request,'annonce_detail1.html')
-
-def annoncedetaix(request):
-   return render(request,'annonce_detailx.html')
-
-def confirmation(request):
-    return render(request, 'confirmation.html')
 
 def afficher_annonces(request):
     annonces = Annonces.objects.all()

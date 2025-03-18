@@ -9,6 +9,12 @@ class Utilisateur(AbstractUser):
         ('Autre', 'Autre'),
     ]
 
+    TYPE_CHOICES = [
+        ('Homme', 'Homme'),
+        ('Femme', 'Femme'),
+        ('Autre', 'Autre'),
+    ]
+    
     age = models.IntegerField()
     civilite = models.CharField(max_length=10, choices=GENRE_CHOICES)
     adresse = models.TextField()
