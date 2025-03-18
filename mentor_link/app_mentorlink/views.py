@@ -20,35 +20,17 @@ def messages(request):
 @login_required
 def depose_annonce(request):
     if request.method == 'POST':
-        # Retrieve form data
-        try:
-            prix = int(request.POST.get('prix'))  # Convert to integer
-        except (ValueError, TypeError):
-            return render(request, 'error.html', {'message': 'Le prix doit être un nombre valide'})
-
-        metier = request.POST.get('metier')
-        adresse = request.POST.get('adresse')
-        description = request.POST.get('description')
-        image = request.FILES.get('image')
-        # Create new Annonce
-        try:
-            nouvelle_annonce = Annonces.objects.create(
-                prix=prix,
-                metier=metier,
-                adresse=adresse,
-                description=description,
-                image=image,
-                #id_personnes=utilisateur
-            )
-            # Redirect to a success page or the list of annonces
-            return redirect('liste_annonce')  # Replace with your actual URL name
-        
-        except Exception as e:
-            # Handle any errors in creating the annonce
-            return render(request, 'error.html', {'message': str(e)})
-
-    # If not a POST request, just render the form
-    return render(request, 'depose_annonce.html')
+        form = AnnonceForm(request.POST, request.FILES)
+        if form.is_valid():
+            annonce = form.save(commit=False)
+            # Si vous avez besoin d'associer l'annonce à l'utilisateur connecté
+            # annonce.id_personnes = request.user
+            annonce.save()
+            return redirect('liste_annonces')
+    else:
+        form = AnnonceForm()
+    
+    return render(request, 'depose_annonce.html', {'form': form})
 
 @login_required
 def confirmation(request):
@@ -104,6 +86,6 @@ def loginperso(request):
             return render(request, 'login.html', {'error': 'Invalid credentials'})
     return render(request, 'login.html')
 
-def afficher_annonces(request):
+def liste_annonces(request):
     annonces = Annonces.objects.all()
-    return render(request, 'annonces.html', {'annonces': annonces})
+    return render(request, 'liste_annonces.html', {'annonces': annonces})

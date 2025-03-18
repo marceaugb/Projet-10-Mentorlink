@@ -8,33 +8,77 @@
         <h2 class="text-center mb-4 text-primary">Déposez votre annonce</h2>
         <form method="POST" action="" enctype="multipart/form-data" class="needs-validation" novalidate>
             {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                {{ error }}
+                {% endfor %}
+            </div>
+            {% endif %}
+            
             <div class="form-group">
-                <label for="id_prix">Prix</label>
-                <input type="number" name="prix" id="id_prix" class="form-control" required>
+                <label for="{{ form.prix.id_for_label }}">Prix</label>
+                {{ form.prix }}
+                {% if form.prix.errors %}
+                <div class="invalid-feedback d-block">
+                    {% for error in form.prix.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
                 <small id="prixCount" class="form-text text-muted">0 caractères (max 10)</small>
             </div>
 
             <div class="form-group">
-                <label for="id_image">Image</label>
-                <input type="file" name="image" id="id_image" accept="image/*" class="form-control-file">
+                <label for="{{ form.image.id_for_label }}">Image</label>
+                {{ form.image }}
+                {% if form.image.errors %}
+                <div class="invalid-feedback d-block">
+                    {% for error in form.image.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
                 <small class="form-text text-muted">Formats acceptés : JPG, PNG, GIF (taille max : 5 Mo)</small>
             </div>
 
             <div class="form-group">
-                <label for="id_metier">Métier</label>
-                <input type="text" name="metier" id="id_metier" class="form-control" required>
+                <label for="{{ form.metier.id_for_label }}">Métier</label>
+                {{ form.metier }}
+                {% if form.metier.errors %}
+                <div class="invalid-feedback d-block">
+                    {% for error in form.metier.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
                 <small id="metierCount" class="form-text text-muted">0 caractères (max 50)</small>
             </div>
 
             <div class="form-group">
-                <label for="id_adresse">Adresse</label>
-                <textarea name="adresse" id="id_adresse" class="form-control" required></textarea>
+                <label for="{{ form.adresse.id_for_label }}">Adresse</label>
+                {{ form.adresse }}
+                {% if form.adresse.errors %}
+                <div class="invalid-feedback d-block">
+                    {% for error in form.adresse.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
                 <small id="adresseCount" class="form-text text-muted">0 caractères (max 100)</small>
             </div>
 
             <div class="form-group">
-                <label for="id_description">Description</label>
-                <textarea name="description" id="id_description" class="form-control"></textarea>
+                <label for="{{ form.description.id_for_label }}">Description</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                <div class="invalid-feedback d-block">
+                    {% for error in form.description.errors %}
+                    {{ error }}
+                    {% endfor %}
+                </div>
+                {% endif %}
                 <small id="descriptionCount" class="form-text text-muted">0 caractères (max 500)</small>
             </div>
 
@@ -74,6 +118,10 @@
         font-weight: bold;
         color: #333;
     }
+    .invalid-feedback {
+        display: block;
+        color: #dc3545;
+    }
 </style>
 
 <script>
@@ -84,7 +132,6 @@
         charCount.textContent = length + " caractères (max " + maxLength + ")";
         if (length > maxLength) {
             charCount.style.color = "red";
-            inputField.value = inputField.value.substring(0, maxLength);
         } else {
             charCount.style.color = "black";
         }
@@ -92,7 +139,7 @@
     
     document.addEventListener("DOMContentLoaded", function() {
         // Image file size validation
-        document.getElementById("id_image").addEventListener("change", function(event) {
+        document.getElementById("{{ form.image.id_for_label }}").addEventListener("change", function(event) {
             const file = event.target.files[0];
             const maxSizeInBytes = 5 * 1024 * 1024; // 5 Mo
             
@@ -103,23 +150,18 @@
                 }
             }
         });
-
-        document.getElementById("id_prix").setAttribute("maxlength", "10");
-        document.getElementById("id_metier").setAttribute("maxlength", "50");
-        document.getElementById("id_adresse").setAttribute("maxlength", "100");
-        document.getElementById("id_description").setAttribute("maxlength", "500");
         
-        document.getElementById("id_prix").addEventListener("input", function() {
-            updateCharacterCount("id_prix", "prixCount", 10);
+        document.getElementById("{{ form.prix.id_for_label }}").addEventListener("input", function() {
+            updateCharacterCount("{{ form.prix.id_for_label }}", "prixCount", 10);
         });
-        document.getElementById("id_metier").addEventListener("input", function() {
-            updateCharacterCount("id_metier", "metierCount", 50);
+        document.getElementById("{{ form.metier.id_for_label }}").addEventListener("input", function() {
+            updateCharacterCount("{{ form.metier.id_for_label }}", "metierCount", 50);
         });
-        document.getElementById("id_adresse").addEventListener("input", function() {
-            updateCharacterCount("id_adresse", "adresseCount", 100);
+        document.getElementById("{{ form.adresse.id_for_label }}").addEventListener("input", function() {
+            updateCharacterCount("{{ form.adresse.id_for_label }}", "adresseCount", 100);
         });
-        document.getElementById("id_description").addEventListener("input", function() {
-            updateCharacterCount("id_description", "descriptionCount", 500);
+        document.getElementById("{{ form.description.id_for_label }}").addEventListener("input", function() {
+            updateCharacterCount("{{ form.description.id_for_label }}", "descriptionCount", 500);
         });
     });
 </script>

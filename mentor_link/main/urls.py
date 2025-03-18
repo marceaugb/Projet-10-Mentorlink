@@ -23,20 +23,18 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-    path('', views.home, name='home'),
     path('home/', views.home, name='home'),
     path('messages/', views.messages, name='messages'),
     path('search/', views.search, name='search'),
     path('profil/', views.profil, name='profil'),
     path('depose_annonce/', views.depose_annonce, name='depose_annonce'),
-    path('annoncedetail/', views.annoncedetail, name='annoncedetail'),
     path('signup/', views.signup, name='signup'),
     path('login/', views.loginperso, name='login'),
     path('admin/', admin.site.urls),
     path('depose_annonce/', views.depose_annonce, name='depose_annonce'),
     path('confirmation/', views.confirmation, name='confirmation'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-    #path('error/', views.error, name='error'),
+    path('liste_annonces/', views.liste_annonces, name='liste_annonces'),
     
 ]
 

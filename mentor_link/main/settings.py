@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app_mentorlink.apps.BaseDeDonneeConfig',
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

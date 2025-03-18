@@ -1,0 +1,63 @@
+{% extends "home.html" %}
+
+{% block title %}Mentorlink - Liste des Annonces{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">Liste des Annonces</h1>
+    
+    {% if annonces %}
+        <div class="row g-4">
+            {% for annonce in annonces %}
+                <div class="col-md-4 mb-4">
+                    <div class="card-wrapper p-2 bg-white rounded-lg shadow-sm">
+                        <div class="card h-100 border-dark" style="border-radius: 15px; transition: transform 0.3s; border-width: 2px !important;">
+                            {% if annonce.image and annonce.image.url %}
+                                <img src="{{ annonce.image.url }}" class="card-img-top" alt="Image de l'annonce" style="height: 220px; object-fit: cover; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                            {% else %}
+                                <div class="card-img-top bg-light d-flex justify-content-center align-items-center" style="height: 220px; background-color: #f8f9fa;">
+                                    <span class="text-muted">Pas d'image disponible</span>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="card-title text-primary mb-0">{{ annonce.metier }}</h5>
+                                    <span class="badge bg-info text-white">{{ annonce.type_contrat }}</span>
+                                </div>
+                                
+                                <div class="card-text flex-grow-1">
+                                    <p class="mb-2">
+                                        <strong>Prix :</strong> <span class="text-success">{{ annonce.prix }} €</span><br>
+                                        <strong>Adresse :</strong> <small class="text-muted">{{ annonce.adresse }}</small><br>
+                                        <strong>Description :</strong> {{ annonce.description|truncatewords:20|default:"Pas de description" }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            Aucune annonce n'a été publiée pour le moment.
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.card-wrapper {
+    background-color: white;
+    border-radius: 18px;
+    transition: transform 0.3s ease;
+}
+.card-wrapper:hover {
+    transform: scale(1.03);
+    box-shadow: 0 15px 25px rgba(0,0,0,0.1) !important;
+}
+.card {
+    border: 2px solid black !important;
+}
+</style>
+{% endblock %}
