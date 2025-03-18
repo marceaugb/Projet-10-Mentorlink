@@ -189,6 +189,25 @@
     
     <main id="main-content">
         {% block content %}
+            <h2>Liste des annonces :</h2>
+            <div class="annonce-list">
+                <ul>
+                    {% for annonce in annonces %}
+                    <li>
+                        <img src="img-user1.jpg" alt="Photo">
+                        <div>
+                            <strong>{{ annonce.metier }}</strong><br>
+                            {{ annonce.prix }} € / heure<br>
+                            {{ annonce.adresse }}<br>
+                            Annonce de :{{ annonce.id_personnes.nom }} {{ annonce.id_personnes.prenom }}<br>
+                        </div>
+                    </li>
+                        <hr>
+                    {% empty %}
+                        <li>Aucune annonce trouvée.</li>
+                    {% endfor %}
+                </ul>
+            </div>
         {% endblock %}
     </main>
     

@@ -1,35 +1,38 @@
 from django.db import models
 import os
+from django.contrib.auth.models import AbstractUser
 
-class Utilisateur(models.Model):
+class Utilisateur(AbstractUser):
     GENRE_CHOICES = [
         ('Homme', 'Homme'),
         ('Femme', 'Femme'),
         ('Autre', 'Autre'),
     ]
 
-    TYPE_CHOICES = [
-        ('Mentor', 'Mentor'),
-        ('Mentoré', 'Mentoré'),
-        ('Administrateur', 'Administrateur'),
-    ]
-
-    id = models.IntegerField(primary_key=True)
-    nom = models.CharField(max_length=100)
-    prenom = models.CharField(max_length=100)
     age = models.IntegerField()
-    genre = models.CharField(max_length=6, choices=GENRE_CHOICES)
+    civilite = models.CharField(max_length=10, choices=GENRE_CHOICES)
     adresse = models.TextField()
     role = models.CharField(max_length=14, choices=TYPE_CHOICES)
 
-    
-    class Meta:
-        constraints = [
-            models.CheckConstraint(check=models.Q(age__gt=15), name='age_greater_than_15'),
-        ]
+    # Ajoutez des related_name personnalisés pour éviter les conflits
+    groups = models.ManyToManyField(
+        'auth.Group',
+        verbose_name='groups',
+        blank=True,
+        help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
+        related_name="utilisateur_groups",  # Nom personnalisé pour éviter les conflits
+        related_query_name="utilisateur",
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        verbose_name='user permissions',
+        blank=True,
+        help_text='Specific permissions for this user.',
+        related_name="utilisateur_permissions",  # Nom personnalisé pour éviter les conflits
+        related_query_name="utilisateur",
+    )
 
-    def __str__(self):
-        return (f"Id:{self.id}, Nom :{self.nom}, Prénom:{self.prenom}, Age:{self.age}, Genre:{self.genre}, Adresse:{self.adresse}, Type:{self.role}")
+    REQUIRED_FIELDS = ['nom', 'prenom', 'email', 'age', 'civilite', 'adresse', 'role']
 
 
 class Annonces(models.Model):

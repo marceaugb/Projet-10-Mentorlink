@@ -1,7 +1,9 @@
 from django.shortcuts import render, redirect
 from .models import Utilisateur, Annonces
 from django.contrib.auth.decorators import login_required
-from .forms import AnnonceForm
+from .forms import UtilisateurForm, AnnonceForm
+from django.contrib.auth import authenticate, login
+
 
 def bdd(request):
     personnes = Utilisateur.objects.all()
@@ -11,10 +13,13 @@ def bdd(request):
     return render(request, 'bdd.html', context)
 
 def home(request):
+    personnes = Utilisateur.objects.all()  # Récupère toutes les personnes
+    annonces = Annonces.objects.all()  # Récupère toutes les annonces
+    context = {'personnes': personnes, 'annonces': annonces}
     if request.user.is_authenticated:
-        return render(request, 'home.html')
+        return render(request, 'home.html', context)
     else:
-        return render(request, 'home_nonconnecte.html')
+        return render(request, 'home_nonconnecte.html', context)
 
 @login_required
 def messages(request):
@@ -34,9 +39,6 @@ def depose_annonce(request):
     return render(request, 'depose_annonce.html', {'form': form})
 """
 
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Annonces, Utilisateur
 
 @login_required
 def depose_annonce(request):
@@ -88,35 +90,52 @@ def confirmation(request):
 def search(request):
    return render(request,'search.html')
 
+
 @login_required
 def profil(request):
-   return render(request,'profil.html')
+    if request.method == 'POST':
+        user = request.user
+        user.nom = request.POST.get('nom')
+        user.prenom = request.POST.get('prenom')
+        user.civilite = request.POST.get('civilite')
+        user.role = request.POST.get('role')
+        user.age = request.POST.get('naissance')  # Mise à jour de l'âge
+        user.adresse = request.POST.get('adresse')
+        user.email = request.POST.get('email')
+        user.save()
+        return redirect('profil') # Redirige vers la page profil après enregistrement
+    return render(request, 'profil.html', {'user': request.user})
 
 def signup(request):
-   return render(request, "signup.html")
+    if request.method == 'POST':
+        form = UtilisateurForm(request.POST)
+        if form.is_valid():
+            print("Formulaire valide")
+            user = form.save(commit=False)
+            user.nom = form.cleaned_data['nom']
+            user.prenom = form.cleaned_data['prenom']
+            user.civilite = form.cleaned_data['civilite']
+            user.save()
+            print("Utilisateur enregistré:", user.username)
+            login(request, user)
+            return redirect('profil')
+        else:
+            print("Formulaire invalide:", form.errors)  # Affiche les erreurs du formulaire
+    else:
+        form = UtilisateurForm()
+    return render(request, 'signup.html', {'form': form})
 
-def login(request):
-   return render(request, "login.html")
-
-"""
-def liste_annonce(request):
-    personnes = Utilisateur.objects.all()
-    annonces = Annonces.objects.all()
-    context = {'personnes': personnes,'annonces': annonces}
-    
-    return render(request, 'liste_annonce.html', context)
-"""
-def liste_annonce(request):
-    # Use select_related to optimize database queries
-    annonces = Annonces.objects.all().select_related('id_personnes')
-    personnes = Utilisateur.objects.all()
-    context = {'personnes': personnes,'annonces': annonces}
-    
-    # Optional: Filter out announcements without images if needed
-    # annonces = annonces.filter(image__isnull=False)
-    
-    return render(request, 'liste_annonce.html', context)
-
+def loginperso(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('home')  # Redirige vers la page d'accueil
+        else:
+            return render(request, 'login.html', {'error': 'Invalid credentials'})
+    return render(request, 'login.html')
 
 def annoncedetail(request):
    return render(request,'annonce_detail1.html')

@@ -17,24 +17,25 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from app_mentorlink import views
-
+from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
 
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('home/', views.home, name='home'),
     path('messages/', views.messages, name='messages'),
     path('search/', views.search, name='search'),
     path('profil/', views.profil, name='profil'),
     path('depose_annonce/', views.depose_annonce, name='depose_annonce'),
     path('annoncedetail/', views.annoncedetail, name='annoncedetail'),
-    path('liste_annonce/', views.liste_annonce, name='liste_annonce'),
     path('signup/', views.signup, name='signup'),
-    path('login/', views.login, name='login'),
+    path('login/', views.loginperso, name='login'),
     path('admin/', admin.site.urls),
     path('depose_annonce/', views.depose_annonce, name='depose_annonce'),
     path('confirmation/', views.confirmation, name='confirmation'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     #path('error/', views.error, name='error'),
     
 ]

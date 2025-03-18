@@ -1,5 +1,8 @@
+from django.contrib.auth.forms import UserCreationForm
 from django import forms
-from .models import Annonces  # Adjust the import based on your actual model location
+from django.core.exceptions import ValidationError
+from .models import Annonces, Utilisateur
+
 
 class AnnonceForm(forms.ModelForm):
     class Meta:
@@ -29,3 +32,22 @@ class AnnonceForm(forms.ModelForm):
         if description and len(description) > 500:
             raise forms.ValidationError("La description ne doit pas dépasser 500 caractères.")
         return description
+
+class UtilisateurForm(UserCreationForm):
+    nom = forms.CharField(max_length=30, required=True, label="Nom")
+    prenom = forms.CharField(max_length=30, required=True, label="Prénom")
+    email = forms.EmailField(required=True, label="Email")
+    age = forms.IntegerField(required=True, label="Âge")
+    civilite = forms.ChoiceField(choices=Utilisateur.GENRE_CHOICES, required=True, label="Genre")
+    adresse = forms.CharField(widget=forms.Textarea(attrs={'rows': 1, 'cols': 40}), required=True, label="Adresse")
+    role = forms.ChoiceField(choices=Utilisateur.TYPE_CHOICES, required=True, label="Rôle")
+
+    class Meta:
+        model = Utilisateur
+        fields = ['username', 'email', 'password1', 'password2', 'nom', 'prenom', 'age', 'civilite', 'adresse', 'role']
+
+    def clean_age(self):
+        age = self.cleaned_data.get('age')
+        if age < 15:
+            raise ValidationError("L'âge doit être supérieur ou égal à 15 ans.")
+        return age

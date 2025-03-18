@@ -1,27 +1,74 @@
 {% extends "home_nonconnecte.html" %}
 
-{% block title %}Mentorlink - Liste des annonces{% endblock %}
+{% block title %}Mentorlink - Inscription{% endblock %}
 
 {% block content %}
 
-<h2>Sign up</h2>
-<form
-  hx-post="{% url 'signup' %}"
-  hx-target="#htmx-content"
-  hx-swap="innerHTML"
-  method="POST"
->
-  {% csrf_token %}
-  <div>
-    <label for="id_email">Adresse email *</label>
-    <input type="email" name="email" id="id_email" required>
-  </div>
-  <div>
-    <label for="id_password">Mot de passe *</label>
-    <input type="password" name="password" id="id_password" required>
-  </div>
-  <!-- Vous pouvez ajouter d’autres champs, comme prénom/nom, etc. -->
-  <button type="submit">S’inscrire</button>
+<h2>Inscription</h2>
+<form method="post">
+    {% csrf_token %}
+
+    <div>
+        <label for="id_username">Nom d'utilisateur:</label>
+        {{ form.username }}
+        {{ form.username.errors }}
+    </div>
+
+    <div>
+        <label for="id_email">Email:</label>
+        {{ form.email }}
+        {{ form.email.errors }}
+    </div>
+
+    <div>
+        <label for="id_password1">Mot de passe:</label>
+        {{ form.password1 }}
+        {{ form.password1.errors }}
+    </div>
+
+    <div>
+        <label for="id_password2">Confirmer le mot de passe:</label>
+        {{ form.password2 }}
+        {{ form.password2.errors }}
+    </div>
+
+    <div>
+        <label for="id_nom">Nom:</label>
+        {{ form.last_name }}
+        {{ form.last_name.errors }}
+    </div>
+
+    <div>
+        <label for="id_prenom">Prénom:</label>
+        {{ form.first_name }}
+        {{ form.first_name.errors }}
+    </div>
+
+    <div>
+        <label for="id_age">Âge:</label>
+        {{ form.age }}
+        {{ form.age.errors }}
+    </div>
+
+    <div>
+        <label for="id_civilite">Civilité:</label>
+        {{ form.civilite }}
+        {{ form.civilite.errors }}
+    </div>
+
+    <div>
+        <label for="id_adresse">Adresse:</label>
+        {{ form.adresse }}
+        {{ form.adresse.errors }}
+    </div>
+
+    <div>
+        <label for="id_role">Rôle:</label>
+        {{ form.role }}
+        {{ form.role.errors }}
+    </div>
+
+    <button type="submit">S'inscrire</button>
 </form>
 
 {% endblock %}

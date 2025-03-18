@@ -1,47 +1,69 @@
+{% extends "home.html" %}
+
+{% block title %}Mentorlink - Liste des annonces{% endblock %}
+
+{% block content %}
+
 <h2>Informations de compte</h2>
 <section>
     <h3>Informations de compte</h3>
-    <div class="form-group">
-        <label>Civilité</label>
-        <input type="radio" name="civ" value="Mme"> Madame
-        <input type="radio" name="civ" value="M." checked> Monsieur
-        <input type="radio" name="civ" value="NA"> Non spécifiée
-    </div>
-    <div class="form-group">
-        <label>Nom *</label>
-        <input type="text" name="nom" value="GILLIO" />
-    </div>
-    <div class="form-group">
-        <label>Prénom *</label>
-        <input type="text" name="prenom" value="Marceau" />
-    </div>
-    <div class="form-group">
-        <label>Date de naissance *</label>
-        <input type="text" name="naissance" value="04/08/2004" />
-    </div>
-    <div class="form-actions">
-        <button>Enregistrer les modifications</button>
-    </div>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        <div>
+            <label for="id_civilite">Civilité :</label>
+            <select id="id_civilite" name="civilite">
+                <option value="Homme" {% if user.civilite == "Homme" %}selected{% endif %}>Homme</option>
+                <option value="Femme" {% if user.civilite == "Femme" %}selected{% endif %}>Femme</option>
+                <option value="Autre" {% if user.civilite == "Autre" %}selected{% endif %}>Autre</option>
+            </select>
+        </div>
+        
+        <div>
+            <label for="id_role">Rôle :</label>
+            <select id="id_role" name="role">
+                <option value="Mentor" {% if user.role == "Mentor" %}selected{% endif %}>Mentor</option>
+                <option value="Mentoré" {% if user.role == "Mentoré" %}selected{% endif %}>Mentoré</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Nom *</label>
+            <input type="text" name="nom" value="{{ user.nom }}">
+        </div>
+        
+        <div class="form-group">
+            <label>Prénom *</label>
+            <input type="text" name="prenom" value="{{ user.prenom }}">
+        </div>
+        
+        <div class="form-group">
+            <label>Date de naissance *</label>
+            <input type="text" name="naissance" value="{{ user.age }}">
+        </div>
+        
+        <h3>Adresse</h3>
+        <div class="form-group">
+            <label>Adresse *</label>
+            <input type="text" name="adresse" value="{{ user.adresse }}">
+        </div>
+        
+        <h3>E-mail</h3>
+        <div class="form-group">
+            <label>E-mail *</label>
+            <input type="text" name="email" value="{{ user.email }}">
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit">Enregistrer les modifications</button>
+        </div>
+    </form>
 </section>
 
-<section>
-    <h3>Adresse</h3>
-    <div class="form-group">
-        <label>Adresse *</label>
-        <input type="text" name="adresse" value="route, Les Avenières Veyrins-Thuellin (38630)" />
-    </div>
-    <div class="form-actions">
-        <button>Enregistrer les modifications</button>
-    </div>
-</section>
-
-<section>
-    <h3>E-mail</h3>
-    <div class="form-group">
-        <label>E-mail *</label>
-        <input type="text" name="email" value="exemple@domaine.com" />
-    </div>
-    <div class="form-actions">
-        <button>Enregistrer les modifications</button>
-    </div>
-</section>
+<form action="{% url 'logout' %}" method="post" style="display: inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Déconnexion</button>
+</form>
+    
+{% endblock %}
