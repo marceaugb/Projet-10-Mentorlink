@@ -1,0 +1,28 @@
+services:
+  web:
+    build: .
+    restart: always
+    volumes:
+      - .:/app
+      - static_volume:/app/static
+      - media_volume:/app/media
+      - db_volume:/app/db  # Volume pour stocker la base de données SQLite
+    environment:
+      - DEBUG=0
+      - SECRET_KEY=change_this_to_a_secure_random_string
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+      - MEDIA_URL=/media/
+      - STATIC_URL=/static/
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "find /app -name manage.py | xargs echo 'Found manage.py at: ' &&
+             cd /app/mentor_link &&
+             python manage.py collectstatic --noinput &&
+             python manage.py migrate &&
+             gunicorn --bind 0.0.0.0:8000 main.wsgi:application"
+
+volumes:
+  static_volume:
+  media_volume:
+  db_volume:  # Volume pour assurer la persistance de la base de données SQLite
