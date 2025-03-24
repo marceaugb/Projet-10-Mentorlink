@@ -1,4 +1,4 @@
-{% extends "home.html" %}
+{% extends "base.html" %}
 
 {% block title %}Mentorlink - Liste des Annonces{% endblock %}
 
@@ -46,18 +46,5 @@
     {% endif %}
 </div>
 
-<style>
-.card-wrapper {
-    background-color: white;
-    border-radius: 18px;
-    transition: transform 0.3s ease;
-}
-.card-wrapper:hover {
-    transform: scale(1.03);
-    box-shadow: 0 15px 25px rgba(0,0,0,0.1) !important;
-}
-.card {
-    border: 2px solid black !important;
-}
-</style>
+
 {% endblock %}
