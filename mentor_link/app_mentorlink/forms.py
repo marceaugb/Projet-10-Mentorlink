@@ -1,12 +1,12 @@
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Annonces, Utilisateur
+from .models import Annonce, Utilisateur
 
 
 class AnnonceForm(forms.ModelForm):
     class Meta:
-        model = Annonces
+        model = Annonce
         fields = ['prix', 'image', 'metier', 'adresse', 'description']
         
     def clean_prix(self):

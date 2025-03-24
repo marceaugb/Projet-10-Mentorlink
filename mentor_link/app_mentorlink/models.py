@@ -40,7 +40,7 @@ class Utilisateur(AbstractUser):
     REQUIRED_FIELDS = ['nom', 'prenom', 'email', 'age', 'civilite', 'adresse', 'role']
 
 
-class Annonces(models.Model):
+class Annonce(models.Model):
     id = models.IntegerField(primary_key=True)
     prix = models.IntegerField()
     
@@ -53,3 +53,4 @@ class Annonces(models.Model):
    
     def __str__(self):
         return (f"Métier= {self.metier}, Prix= {self.prix}, Adresse= {self.adresse}")
+    

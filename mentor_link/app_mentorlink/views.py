@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect
-from .models import Utilisateur, Annonces
+from .models import Utilisateur, Annonce
 from django.contrib.auth.decorators import login_required
 from .forms import UtilisateurForm, AnnonceForm
 from django.contrib.auth import authenticate, login
 
 def home(request):
     personnes = Utilisateur.objects.all()  # Récupère toutes les personnes
-    annonces = Annonces.objects.all()  # Récupère toutes les annonces
+    annonces = Annonce.objects.all()  # Récupère toutes les annonces
     context = {'personnes': personnes, 'annonces': annonces}
     if request.user.is_authenticated:
         return render(request, 'home.html', context)
@@ -87,5 +87,5 @@ def loginperso(request):
     return render(request, 'login.html')
 
 def liste_annonces(request):
-    annonces = Annonces.objects.all()
+    annonces = Annonce.objects.all()
     return render(request, 'liste_annonces.html', {'annonces': annonces})

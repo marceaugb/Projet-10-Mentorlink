@@ -194,10 +194,12 @@
                 <ul>
                     {% for annonce in annonces %}
                     <li>
-                        <img src="img-user1.jpg" alt="Photo">
+            
                         <div>
-                            <strong>{{ annonce.metier }}</strong><br>
+                            <strong>{{ annonce.metier }}</strong>
                             {{ annonce.prix }} € / heure<br>
+                            <img src="{{ annonce.image.url }}" class="card-img-top" alt="Image de l'annonce" style="height: 220px; object-fit: cover; border-top-left-radius: 15px; border-top-right-radius: 15px;"><br>
+                            
                             {{ annonce.adresse }}<br>
                             Annonce de :{{ annonce.id_personnes.nom }} {{ annonce.id_personnes.prenom }}<br>
                         </div>
