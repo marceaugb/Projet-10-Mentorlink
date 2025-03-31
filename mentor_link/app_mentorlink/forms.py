@@ -34,17 +34,14 @@ class AnnonceForm(forms.ModelForm):
         return description
 
 class UtilisateurForm(UserCreationForm):
-    nom = forms.CharField(max_length=30, required=True, label="Nom")
-    prenom = forms.CharField(max_length=30, required=True, label="Prénom")
     email = forms.EmailField(required=True, label="Email")
     age = forms.IntegerField(required=True, label="Âge")
     civilite = forms.ChoiceField(choices=Utilisateur.GENRE_CHOICES, required=True, label="Genre")
     adresse = forms.CharField(widget=forms.Textarea(attrs={'rows': 1, 'cols': 40}), required=True, label="Adresse")
-    role = forms.ChoiceField(choices=Utilisateur.TYPE_CHOICES, required=True, label="Rôle")
 
     class Meta:
         model = Utilisateur
-        fields = ['username', 'email', 'password1', 'password2', 'nom', 'prenom', 'age', 'civilite', 'adresse', 'role']
+        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'age', 'civilite', 'adresse']
 
     def clean_age(self):
         age = self.cleaned_data.get('age')

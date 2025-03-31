@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import *
 from django.contrib.auth import authenticate, login
 from django.db.models import Q
+from django.contrib.auth.forms import AuthenticationForm
 
 def home(request):
     personnes = Utilisateur.objects.all()  # Récupère toutes les personnes
@@ -64,7 +65,6 @@ def profil(request):
         user.nom = request.POST.get('nom')
         user.prenom = request.POST.get('prenom')
         user.civilite = request.POST.get('civilite')
-        user.role = request.POST.get('role')
         user.age = request.POST.get('naissance')  # Mise à jour de l'âge
         user.adresse = request.POST.get('adresse')
         user.email = request.POST.get('email')
@@ -77,31 +77,39 @@ def signup(request):
         form = UtilisateurForm(request.POST)
         if form.is_valid():
             print("Formulaire valide")
-            user = form.save(commit=False)
-            user.nom = form.cleaned_data['nom']
-            user.prenom = form.cleaned_data['prenom']
-            user.civilite = form.cleaned_data['civilite']
-            user.save()
-            print("Utilisateur enregistré:", user.username)
+            user = form.save()
             login(request, user)
-            return redirect('profil')
+            return redirect('home')
         else:
             print("Formulaire invalide:", form.errors)  # Affiche les erreurs du formulaire
     else:
         form = UtilisateurForm()
+
     return render(request, 'signup.html', {'form': form})
+
 
 def loginperso(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('home')  # Redirige vers la page d'accueil
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
+
+            user = authenticate(request, username=username, password=password)  # Vérifie les identifiants
+
+            if user is not None:
+                print(f"Utilisateur {user} authentifié avec succès.")  # Debug
+                login(request, user)  # Connecte l'utilisateur
+                return redirect('home')  # Redirection après connexion réussie
+            else:
+                print("Échec de l'authentification : Mot de passe incorrect.")  # Debug
         else:
-            return render(request, 'login.html', {'error': 'Invalid credentials'})
-    return render(request, 'login.html')
+            print("Échec de l'authentification : Formulaire non valide.")  # Debug
+
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'login.html', {'form': form})
 
 def liste_annonces(request):
     annonces = Annonce.objects.all()

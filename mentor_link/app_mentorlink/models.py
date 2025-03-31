@@ -8,24 +8,17 @@ class Utilisateur(AbstractUser):
         ('Autre', 'Autre'),
     ]
 
-    TYPE_CHOICES = [
-        ('Homme', 'Homme'),
-        ('Femme', 'Femme'),
-        ('Autre', 'Autre'),
-    ]
-    
     age = models.IntegerField()
     civilite = models.CharField(max_length=10, choices=GENRE_CHOICES)
     adresse = models.TextField()
-    role = models.CharField(max_length=14, choices=TYPE_CHOICES)
 
-
+    # Ajoutez des related_name personnalisés pour éviter les conflits
     groups = models.ManyToManyField(
         'auth.Group',
         verbose_name='groups',
         blank=True,
         help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
-        related_name="utilisateur_groups",
+        related_name="utilisateur_groups",  # Nom personnalisé pour éviter les conflits
         related_query_name="utilisateur",
     )
     user_permissions = models.ManyToManyField(
@@ -33,11 +26,11 @@ class Utilisateur(AbstractUser):
         verbose_name='user permissions',
         blank=True,
         help_text='Specific permissions for this user.',
-        related_name="utilisateur_permissions",
+        related_name="utilisateur_permissions",  # Nom personnalisé pour éviter les conflits
         related_query_name="utilisateur",
     )
 
-    REQUIRED_FIELDS = ['nom', 'prenom', 'email', 'age', 'civilite', 'adresse', 'role']
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'email', 'age', 'civilite', 'adresse']
 
 
 class Annonce(models.Model):
