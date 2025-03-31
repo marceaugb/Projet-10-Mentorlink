@@ -201,6 +201,11 @@
                 Profil
             </a>
             
+            <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit">Déconnexion</button>
+            </form>
+            
         </nav>
     </header>
     

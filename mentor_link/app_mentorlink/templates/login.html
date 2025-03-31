@@ -5,13 +5,14 @@
 {% block content %}
 
 <h2>Log In</h2>
-<form method="post">
+<form method="post" action="{% url 'login' %}">
     {% csrf_token %}
-    <label for="username">Username:</label>
-    <input type="text" name="username" required>
-    <label for="password">Password:</label>
-    <input type="password" name="password" required>
-    <button type="submit">Log In</button>
+    {{ form.as_p }}
+    <button type="submit">Se connecter</button>
 </form>
+
+{% if form.errors %}
+    <p style="color: red;">Nom d'utilisateur ou mot de passe incorrect.</p>
+{% endif %}
 
 {% endblock %}
