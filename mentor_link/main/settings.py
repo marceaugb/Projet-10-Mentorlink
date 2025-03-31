@@ -95,6 +95,8 @@ DATABASES = {
 
 LOGIN_URL = '/login/'
 
+AUTH_USER_MODEL = "app_mentorlink.Utilisateur"
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
