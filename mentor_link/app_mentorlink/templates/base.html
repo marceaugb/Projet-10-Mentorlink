@@ -33,6 +33,7 @@
             padding: 0.3em;
             border-radius: 5px;
             border: 1px solid #ccc;
+            width: 200px;
         }
         #main-content {
             padding: 2em;
@@ -160,6 +161,17 @@
             cursor: pointer;
             color: #333;
         }
+        
+        /* Style pour l'indicateur de recherche */
+        .htmx-indicator {
+            display: none;
+        }
+        .htmx-request .htmx-indicator {
+            display: inline;
+            margin-left: 0.5em;
+            font-size: 0.8em;
+            color: #555;
+        }
     </style>
 </head>
 <body>
@@ -172,10 +184,15 @@
                     Déposer une annonce
             </a>
                 
-            <!-- Barre de recherche avec déclenchement sur input (keyup) et après 500ms de pause -->
-            <input type="search" name="q" placeholder="Rechercher" 
-       hx-get="{% url 'search' %}" hx-trigger="keyup changed delay:500ms" 
-       hx-include="[name=q]" hx-target="#main-content" hx-swap="innerHTML" />
+            <!-- Barre de recherche améliorée -->
+            <!-- Remplacer la section de la barre de recherche dans base.html par ce code -->
+            <form action="{% url 'search' %}" method="get" style="display: inline-flex; margin: 0 0.5em;">
+                <input type="search" name="q" placeholder="Rechercher un métier ou une description..." 
+                    style="padding: 0.3em; border-radius: 5px; border: 1px solid #ccc; width: 200px;">
+                <button type="submit" style="margin-left: 0.5em; padding: 0.3em 0.6em; background: #f0f0f0; border: 1px solid #ccc; border-radius: 5px;">
+                    OK
+                </button>
+            </form>
         
             <a href="{% url 'messages' %}" style="text-decoration: none; color: inherit;">
                 Messages
@@ -187,8 +204,10 @@
         </nav>
     </header>
     
-    {% block content %}
-    {% endblock %}
+    <div id="main-content">
+        {% block content %}
+        {% endblock %}
+    </div>
 
     
     <footer>

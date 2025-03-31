@@ -1,0 +1,26 @@
+<!-- search_results.html -->
+<h2>Résultats de recherche pour : "{{ query }}"</h2>
+
+{% if results %}
+    <div class="annonce-list">
+        {% for annonce in results %}
+            <div class="annonce-card">
+                {% if annonce.image %}
+                    <img src="{{ annonce.image.url }}" alt="Image de l'annonce">
+                {% else %}
+                    <img src="/static/default-profile.png" alt="Image par défaut">
+                {% endif %}
+                <div>
+                    <h3>{{ annonce.metier }}</h3>
+                    <p>{{ annonce.prix }}€ / heure</p>
+                    <p>{{ annonce.adresse }}</p>
+                    {% if annonce.description %}
+                        <p>{{ annonce.description|truncatewords:30 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>Aucune annonce ne correspond à votre recherche.</p>
+{% endif %}

@@ -1,8 +1,10 @@
+# Mettre à jour la fonction search dans views.py
 from django.shortcuts import render, redirect
 from .models import Utilisateur, Annonce
 from django.contrib.auth.decorators import login_required
-from .forms import UtilisateurForm, AnnonceForm
+from .forms import *
 from django.contrib.auth import authenticate, login
+from django.db.models import Q
 
 def home(request):
     personnes = Utilisateur.objects.all()  # Récupère toutes les personnes
@@ -38,7 +40,22 @@ def confirmation(request):
 
 @login_required
 def search(request):
-   return render(request,'search.html')
+    query = request.GET.get('q', '')
+    results = []
+    
+    if query:
+        # Recherche dans les champs metier et description
+        results = Annonce.objects.filter(
+            Q(metier__icontains=query) | 
+            Q(description__icontains=query)
+        )
+    
+    context = {
+        'query': query,
+        'results': results
+    }
+    
+    return render(request, 'search.html', context)
 
 @login_required
 def profil(request):

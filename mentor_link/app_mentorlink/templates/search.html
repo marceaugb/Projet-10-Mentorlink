@@ -1,19 +1,45 @@
-<!-- Exemple statique (à adapter côté serveur) -->
-<h2>Résultats de recherche</h2>
+{% extends "base.html" %}
 
-<!-- Idéalement, le serveur reçoit q en paramètre et renvoie des annonces filtrées. -->
-<!-- Ici, on met un texte fixe car sans backend, on ne peut pas filtrer réellement. -->
+{% block title %}Recherche d'annonces{% endblock %}
 
-<p>Vous avez recherché quelque chose. Si le serveur était configuré, cette page afficherait uniquement les annonces correspondant au terme saisi.</p>
-
-<div class="annonce-list">
-    <div class="annonce-card" hx-get="annonce-detail1.html" hx-target="#main-content" hx-swap="innerHTML">
-        <img src="img-user1.jpg" alt="Photo">
-        <div>
-            <strong>Data analyst / scientist</strong><br>
-            20 € / heure<br>
-            Évry-Courcouronnes 91000 Évry<br>
-            28/11/2024
+{% block content %}
+<div class="container">
+    <h2>Rechercher une annonce</h2>
+    
+    <form method="GET" action="{% url 'search' %}">
+        <div class="form-group">
+            <label for="id_q">Recherche :</label>
+            <input type="text" name="q" id="id_q" placeholder="Rechercher un métier ou une description..." 
+                   value="{{ query }}" style="width: 100%; padding: 0.5em; border: 1px solid #ccc; border-radius: 5px;">
         </div>
-    </div>
+        <button type="submit" style="margin-top: 1em; background: #f9a97d; border: none; padding: 0.7em 1em; border-radius: 5px; cursor: pointer;">Rechercher</button>
+    </form>
+    
+    {% if query %}
+        <h3>Résultats de recherche pour : "{{ query }}"</h3>
+        {% if results %}
+            <div class="annonce-list">
+                {% for annonce in results %}
+                    <div class="annonce-card">
+                        {% if annonce.image %}
+                            <img src="{{ annonce.image.url }}" alt="Image de l'annonce">
+                        {% else %}
+                            <img src="/static/default-profile.png" alt="Image par défaut">
+                        {% endif %}
+                        <div>
+                            <h3>{{ annonce.metier }}</h3>
+                            <p>{{ annonce.prix }}€ / heure</p>
+                            <p>{{ annonce.adresse }}</p>
+                            {% if annonce.description %}
+                                <p>{{ annonce.description|truncatewords:30 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Aucune annonce ne correspond à votre recherche.</p>
+        {% endif %}
+    {% endif %}
 </div>
+{% endblock %}
