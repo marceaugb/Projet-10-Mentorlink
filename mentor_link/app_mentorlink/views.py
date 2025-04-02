@@ -25,11 +25,17 @@ def depose_annonce(request):
     if request.method == 'POST':
         form = AnnonceForm(request.POST, request.FILES)
         if form.is_valid():
+            # Ne pas sauvegarder le formulaire immédiatement
             annonce = form.save(commit=False)
-            # Si vous avez besoin d'associer l'annonce à l'utilisateur connecté
-            # annonce.id_personnes = request.user
+            
+            # Associer l'utilisateur connecté à l'annonce
+            annonce.id_personnes = request.user
+            
+            # Maintenant sauvegarder l'annonce
             annonce.save()
-            return redirect('liste_annonces')
+            
+            # Rediriger vers une page de succès ou la liste des annonces
+            return redirect('liste_annonces')  # Remplacez par le nom de votre vue
     else:
         form = AnnonceForm()
     

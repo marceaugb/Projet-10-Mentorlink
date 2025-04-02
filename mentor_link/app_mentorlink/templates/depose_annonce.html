@@ -6,86 +6,95 @@
 <div class="container mt-5 d-flex justify-content-center">
     <div class="card shadow-lg p-4" style="width: 50rem;">
         <h2 class="text-center mb-4 text-primary">Déposez votre annonce</h2>
-        <form method="POST" action="" enctype="multipart/form-data" class="needs-validation" novalidate>
-            {% csrf_token %}
-            
-            {% if form.non_field_errors %}
-            <div class="alert alert-danger">
-                {% for error in form.non_field_errors %}
-                {{ error }}
-                {% endfor %}
+        
+        {% if not user.is_authenticated %}
+            <div class="alert alert-warning">
+                Vous devez être connecté pour déposer une annonce. 
+                <a href="{% url 'login' %}" class="alert-link">Connectez-vous</a> ou 
+                <a href="{% url 'register' %}" class="alert-link">inscrivez-vous</a> pour continuer.
             </div>
-            {% endif %}
-            
-            <div class="form-group">
-                <label for="{{ form.prix.id_for_label }}">Prix</label>
-                {{ form.prix }}
-                {% if form.prix.errors %}
-                <div class="invalid-feedback d-block">
-                    {% for error in form.prix.errors %}
+        {% else %}
+            <form method="POST" action="" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
                     {{ error }}
                     {% endfor %}
                 </div>
                 {% endif %}
-                <small id="prixCount" class="form-text text-muted">0 caractères (max 10)</small>
-            </div>
-
-            <div class="form-group">
-                <label for="{{ form.image.id_for_label }}">Image</label>
-                {{ form.image }}
-                {% if form.image.errors %}
-                <div class="invalid-feedback d-block">
-                    {% for error in form.image.errors %}
-                    {{ error }}
-                    {% endfor %}
+                
+                <div class="form-group">
+                    <label for="{{ form.prix.id_for_label }}">Prix</label>
+                    {{ form.prix }}
+                    {% if form.prix.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.prix.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <small id="prixCount" class="form-text text-muted">0 caractères (max 10)</small>
                 </div>
-                {% endif %}
-                <small class="form-text text-muted">Formats acceptés : JPG, PNG, GIF (taille max : 5 Mo)</small>
-            </div>
 
-            <div class="form-group">
-                <label for="{{ form.metier.id_for_label }}">Métier</label>
-                {{ form.metier }}
-                {% if form.metier.errors %}
-                <div class="invalid-feedback d-block">
-                    {% for error in form.metier.errors %}
-                    {{ error }}
-                    {% endfor %}
+                <div class="form-group">
+                    <label for="{{ form.image.id_for_label }}">Image</label>
+                    {{ form.image }}
+                    {% if form.image.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.image.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <small class="form-text text-muted">Formats acceptés : JPG, PNG, GIF (taille max : 5 Mo)</small>
                 </div>
-                {% endif %}
-                <small id="metierCount" class="form-text text-muted">0 caractères (max 50)</small>
-            </div>
 
-            <div class="form-group">
-                <label for="{{ form.adresse.id_for_label }}">Adresse</label>
-                {{ form.adresse }}
-                {% if form.adresse.errors %}
-                <div class="invalid-feedback d-block">
-                    {% for error in form.adresse.errors %}
-                    {{ error }}
-                    {% endfor %}
+                <div class="form-group">
+                    <label for="{{ form.metier.id_for_label }}">Métier</label>
+                    {{ form.metier }}
+                    {% if form.metier.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.metier.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <small id="metierCount" class="form-text text-muted">0 caractères (max 50)</small>
                 </div>
-                {% endif %}
-                <small id="adresseCount" class="form-text text-muted">0 caractères (max 100)</small>
-            </div>
 
-            <div class="form-group">
-                <label for="{{ form.description.id_for_label }}">Description</label>
-                {{ form.description }}
-                {% if form.description.errors %}
-                <div class="invalid-feedback d-block">
-                    {% for error in form.description.errors %}
-                    {{ error }}
-                    {% endfor %}
+                <div class="form-group">
+                    <label for="{{ form.adresse.id_for_label }}">Adresse</label>
+                    {{ form.adresse }}
+                    {% if form.adresse.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.adresse.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <small id="adresseCount" class="form-text text-muted">0 caractères (max 100)</small>
                 </div>
-                {% endif %}
-                <small id="descriptionCount" class="form-text text-muted">0 caractères (max 500)</small>
-            </div>
 
-            <div class="text-center">
-                <button type="submit" class="btn btn-orange btn-lg mt-3">Publier l'annonce</button>
-            </div>
-        </form>
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}">Description</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}
+                    <div class="invalid-feedback d-block">
+                        {% for error in form.description.errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <small id="descriptionCount" class="form-text text-muted">0 caractères (max 500)</small>
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-orange btn-lg mt-3">Publier l'annonce</button>
+                </div>
+            </form>
+        {% endif %}
     </div>
 </div>
 
