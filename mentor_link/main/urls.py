@@ -35,7 +35,11 @@ urlpatterns = [
     path('confirmation/', views.confirmation, name='confirmation'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('liste_annonces/', views.liste_annonces, name='liste_annonces'),
-    
+    path('mes-annonces/', views.annonces_utilisateur, name='mes_annonces'),
+    path('utilisateur/<int:user_id>/annonces/', views.annonces_utilisateur, name='annonces_utilisateur'),
+    path('annonce/<int:annonce_id>/', views.annonce_detail, name='annonce_detail'),
+    path('annonce/<int:annonce_id>/modifier/', views.modifier_annonce, name='modifier_annonce'),
+    path('annonce/<int:annonce_id>/supprimer/', views.supprimer_annonce, name='supprimer_annonce'),
 ]
 
 

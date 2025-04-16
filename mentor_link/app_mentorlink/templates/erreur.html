@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Mentorlink - Erreur{% endblock %}
+
+{% block content %}
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-lg p-4" style="width: 40rem;">
+        <div class="text-center">
+            <i class="fas fa-exclamation-circle text-danger" style="font-size: 4rem;"></i>
+            <h2 class="text-center mb-4 mt-3 text-danger">Une erreur est survenue</h2>
+            <p class="lead">{{ message }}</p>
+            <div class="mt-4">
+                <a href="{% url 'home' %}" class="btn btn-primary me-2">Retour à l'accueil</a>
+                <a href="{% url 'liste_annonces' %}" class="btn btn-secondary">Voir les annonces</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background: #ffffff;
+        color: #333;
+        font-family: 'Arial', sans-serif;
+    }
+    .card {
+        border-radius: 15px;
+        background: #ffffff;
+        color: #333;
+    }
+    h2 {
+        font-weight: bold;
+    }
+</style>
+{% endblock %}

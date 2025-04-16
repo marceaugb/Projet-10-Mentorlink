@@ -48,3 +48,6 @@ class UtilisateurForm(UserCreationForm):
         if age < 15:
             raise ValidationError("L'âge doit être supérieur ou égal à 15 ans.")
         return age
+    
+
+

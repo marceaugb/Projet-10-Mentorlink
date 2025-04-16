@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Mentorlink - {{ titre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center mb-4 text-primary">{{ titre }}</h2>
+        
+        {% if annonces %}
+            <div class="row">
+                {% for annonce in annonces %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        {% if annonce.image %}
+                            <img src="{{ annonce.image.url }}" class="card-img-top" alt="{{ annonce.metier }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-light text-center py-5" style="height: 200px;">
+                                <span class="text-muted">Pas d'image</span>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ annonce.metier }}</h5>
+                            <p class="card-text"><strong>Prix :</strong> {{ annonce.prix }} €</p>
+                            <p class="card-text"><strong>Adresse :</strong> {{ annonce.adresse }}</p>
+                            <p class="card-text text-truncate"><strong>Description :</strong> {{ annonce.description }}</p>
+                        </div>
+                        <div class="card-footer bg-white p-2">
+                            <br><a href="{% url 'annonce_detail' annonce.id %}" class="btn btn-orange btn-sm w-100 mb-2">Voir détails</a>
+                            {% if request.user.id == annonce.id_personnes.id %}
+                                <div class="d-flex justify-content-between mb-0">
+                                    <br><a href="{% url 'modifier_annonce' annonce.id %}" class="btn btn-outline-primary btn-sm flex-grow-1 me-1">Modifier</a>
+                                    <br><a href="{% url 'supprimer_annonce' annonce.id %}" class="btn btn-outline-danger btn-sm flex-grow-1">Supprimer</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center">
+                {% if user_id is None %}
+                    Vous n'avez pas encore déposé d'annonce.
+                    <br><a href="{% url 'depose_annonce' %}" class="alert-link">Déposer une annonce</a>
+                {% else %}
+                    Cet utilisateur n'a pas encore déposé d'annonce.
+                {% endif %}
+            </div>
+        {% endif %}
+        
+        {% if user_id is None %}
+            <div class="text-center mt-4 mb-3">
+                <br><a href="{% url 'depose_annonce' %}" class="btn btn-orange btn-lg">Déposer une nouvelle annonce</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    body {
+        background: #ffffff;
+        color: #333;
+        font-family: 'Arial', sans-serif;
+    }
+    .card {
+        border-radius: 15px;
+        background: #ffffff;
+        color: #333;
+    }
+    .btn-orange {
+        background-color: #ff9800;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: white;
+    }
+    .btn-orange:hover {
+        background-color: #e68900;
+    }
+    h2 {
+        font-weight: bold;
+    }
+    .text-truncate {
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .btn-block {
+        display: block;
+        width: 100%;
+    }
+</style>
+{% endblock %}

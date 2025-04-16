@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Mentorlink - Confirmer la suppression{% endblock %}
+
+{% block content %}
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-lg p-4" style="width: 40rem;">
+        <div class="text-center">
+            <i class="fas fa-exclamation-triangle text-warning" style="font-size: 4rem;"></i>
+            <h2 class="text-center mb-4 mt-3 text-warning">Confirmer la suppression</h2>
+            
+            <p class="lead">Êtes-vous sûr de vouloir supprimer cette annonce ?</p>
+            
+            <div class="alert alert-secondary my-3">
+                <h5>{{ annonce.metier }}</h5>
+                <p><strong>Prix :</strong> {{ annonce.prix }} €</p>
+                <p><strong>Adresse :</strong> {{ annonce.adresse }}</p>
+            </div>
+            
+            <p class="text-danger">Cette action est irréversible !</p>
+            
+            <div class="mt-4">
+                <form method="POST" action="{% url 'supprimer_annonce' annonce.id %}">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-center">
+                        <a href="{% url 'annonce_detail' annonce.id %}" class="btn btn-secondary me-2">Annuler</a>
+                        <button type="submit" class="btn btn-danger">Supprimer définitivement</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background: #ffffff;
+        color: #333;
+        font-family: 'Arial', sans-serif;
+    }
+    .card {
+        border-radius: 15px;
+        background: #ffffff;
+        color: #333;
+    }
+    h2 {
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
