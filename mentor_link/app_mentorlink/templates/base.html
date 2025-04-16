@@ -183,6 +183,10 @@
             <a href="{% url 'depose_annonce' %}" style="text-decoration: none; color: inherit;">
                     Déposer une annonce
             </a>
+            
+            <a href="{% url 'mes_annonces' %}" style="text-decoration: none; color: inherit;">
+                    Mes annonces
+            </a>
                 
             <!-- Barre de recherche améliorée -->
             <!-- Remplacer la section de la barre de recherche dans base.html par ce code -->
@@ -200,6 +204,7 @@
             <a href="{% url 'profil' %}" style="text-decoration: none; color: inherit;">
                 Profil
             </a>
+            
             
             <form action="{% url 'logout' %}" method="post" style="display: inline;">
                 {% csrf_token %}
