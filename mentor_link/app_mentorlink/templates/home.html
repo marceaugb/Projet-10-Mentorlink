@@ -2,26 +2,36 @@
 
 {% block title %}Page d'accueil{% endblock %}
 
-        {% block content %}
-            <h2>Liste des annonces :</h2>
-            <div class="annonce-list">
-                <ul>
-                    {% for annonce in annonces %}
-                    <li>
-            
-                        <div>
-                            <strong>{{ annonce.metier }}</strong>
-                            {{ annonce.prix }} € / heure<br>
-                            <img src="{{ annonce.image.url }}" class="card-img-top" alt="Image de l'annonce" style="height: 220px; object-fit: cover; border-top-left-radius: 15px; border-top-right-radius: 15px;"><br>
-                            
-                            {{ annonce.adresse }}<br>
-                            Annonce de :{{ annonce.id_personnes.nom }} {{ annonce.id_personnes.prenom }}<br>
+{% block content %}
+    <h2>Liste des annonces :</h2>
+    <div class="annonce-list">
+        <ul>
+            {% for annonce in annonces %}
+            <li>
+                <div>
+                    <strong>{{ annonce.metier }}</strong>
+                    {{ annonce.prix }} € / heure<br>
+                    {% if annonce.image %}
+                        <img src="{{ annonce.image.url }}" class="card-img-top" alt="Image de l'annonce" style="height: 220px; object-fit: cover; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                    {% else %}
+                        <div class="bg-light text-center py-5" style="height: 220px; border-radius: 15px;">
+                            <span class="text-muted">Pas d'image disponible</span>
                         </div>
-                    </li>
-                        <hr>
-                    {% empty %}
-                        <li>Aucune annonce trouvée.</li>
-                    {% endfor %}
-                </ul>
-            </div>
-    {% endblock %}
+                    {% endif %}<br>
+                    
+                    {{ annonce.adresse }}<br>
+                    Annonce de : 
+                    {% if annonce.id_personnes %}
+                        {{ annonce.id_personnes.first_name }} {{ annonce.id_personnes.last_name }}
+                    {% else %}
+                        Utilisateur inconnu
+                    {% endif %}<br>
+                </div>
+            </li>
+            <hr>
+            {% empty %}
+                <li>Aucune annonce trouvée.</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
