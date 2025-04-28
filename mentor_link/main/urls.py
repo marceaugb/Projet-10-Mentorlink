@@ -24,7 +24,6 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('messages/', views.messages, name='messages'),
     path('search/', views.search, name='search'),
     path('profil/', views.profil, name='profil'),
     path('depose_annonce/', views.depose_annonce, name='depose_annonce'),
@@ -40,6 +39,9 @@ urlpatterns = [
     path('annonce/<int:annonce_id>/', views.annonce_detail, name='annonce_detail'),
     path('annonce/<int:annonce_id>/modifier/', views.modifier_annonce, name='modifier_annonce'),
     path('annonce/<int:annonce_id>/supprimer/', views.supprimer_annonce, name='supprimer_annonce'),
+    path('messages/', views.conversation_list, name='conversation_list'),
+    path('messages/<int:pk>/', views.conversation_detail, name='conversation_detail'),
+    path('messages/start/<int:user_id>/', views.start_conversation, name='start_conversation'),
 ]
 
 

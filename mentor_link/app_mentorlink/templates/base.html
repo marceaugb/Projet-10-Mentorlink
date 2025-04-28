@@ -179,46 +179,53 @@
         <a href="{% url 'home' %}" class="logo-btn" style="text-decoration: none; color: inherit;">
             <span style="color:darkblue;">Mentor</span><span style="color:lightblue;">link</span>
         </a>
-        <nav>
-            <a href="{% url 'depose_annonce' %}" style="text-decoration: none; color: inherit;">
-                    Déposer une annonce
-            </a>
-            
-            <a href="{% url 'mes_annonces' %}" style="text-decoration: none; color: inherit;">
-                    Mes annonces
-            </a>
-                
-            <!-- Barre de recherche améliorée -->
-            <!-- Remplacer la section de la barre de recherche dans base.html par ce code -->
-            <form action="{% url 'search' %}" method="get" style="display: inline-flex; margin: 0 0.5em;">
-                <input type="search" name="q" placeholder="Rechercher un métier ou une description..." 
-                    style="padding: 0.3em; border-radius: 5px; border: 1px solid #ccc; width: 200px;">
-                <button type="submit" style="margin-left: 0.5em; padding: 0.3em 0.6em; background: #f0f0f0; border: 1px solid #ccc; border-radius: 5px;">
-                    OK
-                </button>
-            </form>
         
-            <a href="{% url 'messages' %}" style="text-decoration: none; color: inherit;">
-                Messages
-            </a>
-            <a href="{% url 'profil' %}" style="text-decoration: none; color: inherit;">
-                Profil
-            </a>
+        <form action="{% url 'search' %}" method="get" style="display: inline-flex; margin: 0 0.5em;">
+            <input type="search" name="q" placeholder="Rechercher un métier ou une description..." 
+                style="padding: 0.3em; border-radius: 5px; border: 1px solid #ccc; width: 200px;">
+            <button type="submit" style="margin-left: 0.5em; padding: 0.3em 0.6em; background: #f0f0f0; border: 1px solid #ccc; border-radius: 5px;">
+                OK
+            </button>
+        </form>
+    
+        {% if request.user.is_authenticated %}
+            <nav>
+                <a href="{% url 'depose_annonce' %}" style="text-decoration: none; color: inherit;">
+                        Déposer une annonce
+                </a>
+                
+                
             
+                <a href="{% url 'conversation_list' %}" style="text-decoration: none; color: inherit;">
+                    Messages
+                </a>
+                <a href="{% url 'profil' %}" style="text-decoration: none; color: inherit;">
+                    Profil
+                </a>
+                
+                <form action="{% url 'logout' %}" method="post" style="text-decoration: none; color: inherit;">
+                    {% csrf_token %}
+                    <button type="submit">Déconnexion</button>
+                </form>
             
-            <form action="{% url 'logout' %}" method="post" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit">Déconnexion</button>
-            </form>
-            
-        </nav>
+            </nav>
+        {% else %}
+            <nav>
+                <a href="{% url 'login' %}" style="text-decoration: none; color: inherit;">
+                    log in
+                </a>
+                <a href="{% url 'signup' %}" style="text-decoration: none; color: inherit;">
+                    sign up
+                </a>
+        
+            </nav>
+        {% endif %}
     </header>
     
-    <div id="main-content">
+    <main>
         {% block content %}
         {% endblock %}
-    </div>
-
+    </main>
     
     <footer>
         <div class="footer-legal">

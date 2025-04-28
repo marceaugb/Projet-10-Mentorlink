@@ -1,4 +1,3 @@
-# Mettre à jour la fonction search dans views.py
 from django.shortcuts import render, redirect
 from .models import Utilisateur, Annonce
 from django.contrib.auth.decorators import login_required
@@ -6,19 +5,19 @@ from .forms import *
 from django.contrib.auth import authenticate, login
 from django.db.models import Q
 from django.contrib.auth.forms import AuthenticationForm
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import Message
+from django.contrib.auth.models import User
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Conversation, Message
+from django.contrib.auth.decorators import login_required
 
 def home(request):
     personnes = Utilisateur.objects.all()  # Récupère toutes les personnes
     annonces = Annonce.objects.all()  # Récupère toutes les annonces
     context = {'personnes': personnes, 'annonces': annonces}
-    if request.user.is_authenticated:
-        return render(request, 'home.html', context)
-    else:
-        return render(request, 'home_nonconnecte.html', context)
-
-@login_required
-def messages(request):
-   return render(request,'messages.html')
+    return render(request, 'home.html', context)
 
 @login_required
 def depose_annonce(request):
@@ -45,7 +44,6 @@ def depose_annonce(request):
 def confirmation(request):
     return render(request, 'confirmation.html')
 
-@login_required
 def search(request):
     query = request.GET.get('q', '')
     results = []
@@ -68,10 +66,10 @@ def search(request):
 def profil(request):
     if request.method == 'POST':
         user = request.user
-        user.nom = request.POST.get('nom')
-        user.prenom = request.POST.get('prenom')
+        user.last_name = request.POST.get('nom')
+        user.first_name = request.POST.get('prenom')
         user.civilite = request.POST.get('civilite')
-        user.age = request.POST.get('naissance')  # Mise à jour de l'âge
+        user.date_naissance = request.POST.get('date_naissance')  # avec mise à jour de l'âge
         user.adresse = request.POST.get('adresse')
         user.email = request.POST.get('email')
         user.save()
@@ -217,3 +215,54 @@ def supprimer_annonce(request, annonce_id):
     }
     
     return render(request, 'confirmer_suppression.html', context)
+
+@login_required
+def chat_view(request, other_user_username):
+    other_user = User.objects.get(username=other_user_username)
+    messages = Message.objects.filter(
+        sender=request.user, receiver=other_user
+    ) | Message.objects.filter(sender=other_user, receiver=request.user)
+    messages = messages.order_by('timestamp')
+    
+    # On renvoie les messages dans un format de mise à jour partielle pour HTMX
+    return render(request, 'chat/chat_log.html', {'messages': messages})
+
+@login_required
+def send_message(request, other_user_username):
+    if request.method == 'POST':
+        message_content = request.POST['message']
+        other_user = User.objects.get(username=other_user_username)
+        
+        # Créer un message et le sauvegarder
+        message = Message.objects.create(
+            sender=request.user,
+            receiver=other_user,
+            content=message_content
+        )
+        
+        # Pour HTMX, on renvoie une mise à jour du chat_log
+        return render(request, 'chat/chat_log.html', {'messages': [message]})
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@login_required
+def conversation_list(request):
+    conversations = Conversation.objects.filter(participants=request.user)
+    return render(request, 'conversation_list.html', {'conversations': conversations})
+
+@login_required
+def conversation_detail(request, pk):
+    conversation = get_object_or_404(Conversation, pk=pk, participants=request.user)
+    return render(request, 'conversation_detail.html', {
+        'conversation': conversation,
+        'messages': conversation.messages.order_by('timestamp')
+    })
+
+@login_required
+def start_conversation(request, user_id):
+    other_user = get_object_or_404(User, pk=user_id)
+    conversation = Conversation.objects.filter(participants=request.user).filter(participants=other_user).first()
+    if not conversation:
+        conversation = Conversation.objects.create()
+        conversation.participants.add(request.user, other_user)
+    return redirect('conversation_detail', pk=conversation.pk)
