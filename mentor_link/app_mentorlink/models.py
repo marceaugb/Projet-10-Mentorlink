@@ -44,16 +44,17 @@ class Utilisateur(AbstractUser):
         related_query_name="utilisateur",
     )
 
-class Conversation(models.Model):
-    participants = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='conversations')
-    created_at = models.DateTimeField(auto_now_add=True)
+class Room(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True)
+    users = models.ManyToManyField('Utilisateur', blank=True)  # Associe les utilisateurs au salon
 
     def __str__(self):
-        return f"Conversation {self.id}"
+        return self.name
 
 class Message(models.Model):
-    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
-    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='messages')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 

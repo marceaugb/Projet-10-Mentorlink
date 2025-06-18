@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Utilisateur, Annonce
+from .models import Utilisateur, Annonce, Room
 from django.contrib.auth.decorators import login_required
 from .forms import *
 from django.contrib.auth import authenticate, login
@@ -10,8 +10,8 @@ from django.http import JsonResponse
 from .models import Message
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Conversation, Message
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 def home(request):
     personnes = Utilisateur.objects.all()  # Récupère toutes les personnes
@@ -34,7 +34,7 @@ def depose_annonce(request):
             annonce.save()
             
             # Rediriger vers une page de succès ou la liste des annonces
-            return redirect('liste_annonces')  # Remplacez par le nom de votre vue
+            return redirect('home')  # Remplacez par le nom de votre vue
     else:
         form = AnnonceForm()
     
@@ -115,12 +115,6 @@ def loginperso(request):
 
     return render(request, 'login.html', {'form': form})
 
-def liste_annonces(request):
-    annonces = Annonce.objects.all()
-    return render(request, 'liste_annonces.html', {'annonces': annonces})
-
-
-@login_required
 def annonces_utilisateur(request, user_id=None):
     """
     Affiche toutes les annonces d'un utilisateur spécifique.
@@ -150,7 +144,7 @@ def annonces_utilisateur(request, user_id=None):
     return render(request, 'annonces_utilisateur.html', context)
 
 
-@login_required
+
 def annonce_detail(request, annonce_id):
     """
     Affiche le détail d'une annonce spécifique.
@@ -217,52 +211,27 @@ def supprimer_annonce(request, annonce_id):
     return render(request, 'confirmer_suppression.html', context)
 
 @login_required
-def chat_view(request, other_user_username):
-    other_user = User.objects.get(username=other_user_username)
-    messages = Message.objects.filter(
-        sender=request.user, receiver=other_user
-    ) | Message.objects.filter(sender=other_user, receiver=request.user)
-    messages = messages.order_by('timestamp')
-    
-    # On renvoie les messages dans un format de mise à jour partielle pour HTMX
-    return render(request, 'chat/chat_log.html', {'messages': messages})
+def room(request, slug):
+    print(f"Room view called with slug: {slug}")
+    room = get_object_or_404(Room, slug=slug)
+    return render(request, 'room.html', {'room': room})
 
 @login_required
-def send_message(request, other_user_username):
-    if request.method == 'POST':
-        message_content = request.POST['message']
-        other_user = User.objects.get(username=other_user_username)
-        
-        # Créer un message et le sauvegarder
-        message = Message.objects.create(
-            sender=request.user,
-            receiver=other_user,
-            content=message_content
-        )
-        
-        # Pour HTMX, on renvoie une mise à jour du chat_log
-        return render(request, 'chat/chat_log.html', {'messages': [message]})
+def start_private_chat(request, annonce_id):
+    annonce = get_object_or_404(Annonce, id=annonce_id)
+    user = request.user
+    author = annonce.id_personnes  # ForeignKey to Utilisateur
 
-    return JsonResponse({'error': 'Invalid request'}, status=400)
+    # Check if a room exists between the two users
+    room = Room.objects.filter(users=user).filter(users=author).first()
+    if not room:
+        # Create a room for the two users
+        room_name = f"Chat: {user.username} - {author.username}"
+        room_slug = f"room-{min(user.id, author.id)}-{max(user.id, author.id)}"  # Changed to "room-"
+        room = Room.objects.create(name=room_name, slug=room_slug)
+        room.users.add(user, author)
 
-@login_required
-def conversation_list(request):
-    conversations = Conversation.objects.filter(participants=request.user)
-    return render(request, 'conversation_list.html', {'conversations': conversations})
+    return JsonResponse({'room_slug': room.slug})
 
-@login_required
-def conversation_detail(request, pk):
-    conversation = get_object_or_404(Conversation, pk=pk, participants=request.user)
-    return render(request, 'conversation_detail.html', {
-        'conversation': conversation,
-        'messages': conversation.messages.order_by('timestamp')
-    })
-
-@login_required
-def start_conversation(request, user_id):
-    other_user = get_object_or_404(User, pk=user_id)
-    conversation = Conversation.objects.filter(participants=request.user).filter(participants=other_user).first()
-    if not conversation:
-        conversation = Conversation.objects.create()
-        conversation.participants.add(request.user, other_user)
-    return redirect('conversation_detail', pk=conversation.pk)
+def my_messages(request):
+    return render(request, 'my_messages.html')
