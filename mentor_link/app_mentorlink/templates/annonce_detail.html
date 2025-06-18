@@ -41,7 +41,7 @@
                     <div class="d-flex flex-wrap gap-2 mb-3">
                         <a href="{% url 'modifier_annonce' annonce.id %}" class="btn btn-outline-primary">Modifier l'annonce</a>
                         <a href="{% url 'supprimer_annonce' annonce.id %}" class="btn btn-danger">Supprimer l'annonce</a>
-                        <a href="{% url 'annonces_utilisateur' annonce.id_personnes.id %}" class="text-decoration-none">
+                        <a href="{% url 'mes_annonces' %}" class="text-decoration-none">
                             Voir toutes mes annonces
                         </a>
                     </div>
