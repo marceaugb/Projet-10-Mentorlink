@@ -19,6 +19,7 @@
                 <option value="Autre" {% if user.civilite == "Autre" %}selected{% endif %}>Autre</option>
             </select>
         </div>
+        <p></p>
         
         <div class="form-group">
             <label>Nom *</label>
@@ -31,17 +32,10 @@
         </div>
         
         <div class="form-group">
-            <label>Date de naissance*</label>
-            <input type="date" name="date_naissance" value="{{ user.date_naissance|date:'Y-m-d' }}">
-        </div>
-        
-        <h3>Adresse</h3>
-        <div class="form-group">
             <label>Adresse *</label>
             <input type="text" name="adresse" value="{{ user.adresse }}">
         </div>
         
-        <h3>E-mail</h3>
         <div class="form-group">
             <label>E-mail *</label>
             <input type="text" name="email" value="{{ user.email }}">
