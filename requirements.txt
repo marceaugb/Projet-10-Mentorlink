@@ -11,4 +11,3 @@ whitenoise
 daphne
 channels
 channels_redis
-bootstrap
