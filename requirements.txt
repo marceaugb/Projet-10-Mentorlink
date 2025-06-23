@@ -10,3 +10,4 @@ gunicorn
 whitenoise
 daphne
 channels
+channels_redis
