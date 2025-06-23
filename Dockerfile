@@ -37,4 +37,4 @@ RUN mkdir -p /app/media /app/static /app/db
 EXPOSE 8000
 
 # Commande pour démarrer l'application
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "main.wsgi:application"]
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "main.asgi:application"]
