@@ -8,3 +8,4 @@ Pillow>=9.0.0
 channels==4.0.0
 gunicorn
 whitenoise
+daphne
