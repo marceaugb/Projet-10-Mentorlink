@@ -20,7 +20,7 @@ services:
              cd /app/mentor_link &&
              python manage.py collectstatic --noinput &&
              python manage.py migrate &&
-             daphne -b 0.0.0.0 -p 8000 mentor_link.asgi:application"
+             daphne -b 0.0.0.0 -p 8000 mentor_link.main.asgi:application"
 
 volumes:
   static_volume:
