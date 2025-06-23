@@ -15,14 +15,18 @@ services:
       - STATIC_URL=/static/
     ports:
       - "8000:8000"
-    command: >
+        command: >
       sh -c "find /app -name manage.py | xargs echo 'Found manage.py at: ' &&
              cd /app/mentor_link &&
              python manage.py collectstatic --noinput &&
              python manage.py migrate &&
-             gunicorn --bind 0.0.0.0:8000 main.wsgi:application"
-
-volumes:
-  static_volume:
-  media_volume:
+             daphne -b 0.0.0.0 -p 8000 main.asgi:application"
+    depends_on:
+      - redis
+    environment:
+      - USE_REDIS=1
   db_volume:  # Volume pour assurer la persistance de la base de données SQLite
+
+  redis:
+    image: redis:7
+    restart: always
