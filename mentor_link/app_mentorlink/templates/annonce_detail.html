@@ -33,9 +33,6 @@
                     <h5>Proposé par</h5>
                     <p>
                         {{ annonce.id_personnes.first_name }} {{ annonce.id_personnes.last_name }}
-                        <a href="{% url 'annonces_utilisateur' annonce.id_personnes.id %}" class="text-decoration-none">
-                            (Voir toutes les annonces de cet utilisateur)
-                        </a>
                     </p>
                 </div>
                 
@@ -44,12 +41,45 @@
                     <div class="d-flex flex-wrap gap-2 mb-3">
                         <a href="{% url 'modifier_annonce' annonce.id %}" class="btn btn-outline-primary">Modifier l'annonce</a>
                         <a href="{% url 'supprimer_annonce' annonce.id %}" class="btn btn-danger">Supprimer l'annonce</a>
-                        <a href="{% url 'liste_annonces' %}" class="btn btn-secondary">Retour aux annonces</a>
+                        <a href="{% url 'mes_annonces' %}" class="text-decoration-none">
+                            Voir toutes mes annonces
+                        </a>
                     </div>
                     {% else %}
                     <div class="d-flex flex-wrap gap-2 mb-3">
-                        <a href="{% url 'liste_annonces' %}" class="btn btn-secondary">Retour aux annonces</a>
-                        <a href="#" class="btn btn-orange">Contacter le mentor</a>
+                        <a href="{% url 'home' %}" class="btn btn-secondary">Retour aux annonces</a>
+                        
+
+                        <button hx-get="{% url 'start_private_chat' annonce.id %}" 
+                                hx-target="this" 
+                                hx-swap="outerHTML"
+                                class="btn btn-primary">
+                            Contacter le vendeur
+                        </button>
+                        <script>
+                            document.addEventListener('htmx:afterRequest', function(evt) {
+                                if (evt.detail.requestConfig.verb === 'get' && evt.detail.target.tagName === 'BUTTON') {
+                                    try {
+                                        const response = JSON.parse(evt.detail.xhr.response);
+                                        const roomSlug = response.room_slug;
+                                        if (roomSlug) {
+                                            window.location.href = `/${roomSlug}/`;
+                                        } else {
+                                            console.error('Erreur : room_slug non trouvé dans la réponse', response);
+                                            alert('Impossible de créer le salon. Veuillez réessayer.');
+                                        }
+                                    } catch (e) {
+                                        console.error('Erreur lors de l’analyse de la réponse JSON', e);
+                                        alert('Une erreur est survenue. Veuillez réessayer.');
+                                    }
+                                }
+                            });
+                        </script>
+
+
+                        <a href="{% url 'annonces_utilisateur' annonce.id_personnes.id %}" class="text-decoration-none">
+                            Voir toutes les annonces de cet utilisateur
+                        </a>
                     </div>
                     {% endif %}
                 </div>
@@ -58,29 +88,4 @@
     </div>
 </div>
 
-<style>
-    body {
-        background: #ffffff;
-        color: #333;
-        font-family: 'Arial', sans-serif;
-    }
-    .card {
-        border-radius: 15px;
-        background: #ffffff;
-        color: #333;
-    }
-    .btn-orange {
-        background-color: #ff9800;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        color: white;
-    }
-    .btn-orange:hover {
-        background-color: #e68900;
-    }
-    h2 {
-        font-weight: bold;
-    }
-</style>
 {% endblock %}

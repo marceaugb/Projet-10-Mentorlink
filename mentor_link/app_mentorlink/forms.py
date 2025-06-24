@@ -2,7 +2,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from django.core.exceptions import ValidationError
 from .models import Annonce, Utilisateur
-
+from datetime import date
 
 class AnnonceForm(forms.ModelForm):
     class Meta:
@@ -35,19 +35,28 @@ class AnnonceForm(forms.ModelForm):
 
 class UtilisateurForm(UserCreationForm):
     email = forms.EmailField(required=True, label="Email")
-    age = forms.IntegerField(required=True, label="Âge")
     civilite = forms.ChoiceField(choices=Utilisateur.GENRE_CHOICES, required=True, label="Genre")
     adresse = forms.CharField(widget=forms.Textarea(attrs={'rows': 1, 'cols': 40}), required=True, label="Adresse")
 
+    
     class Meta:
         model = Utilisateur
-        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'age', 'civilite', 'adresse']
+        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'date_naissance', 'civilite', 'adresse']
 
-    def clean_age(self):
-        age = self.cleaned_data.get('age')
+    def clean_date_naissance(self):
+        """Vérifie si la date de naissance correspond à un âge de 15 ans minimum."""
+        date_naissance = self.cleaned_data.get("date_naissance")
+        if not date_naissance:
+            raise forms.ValidationError("La date de naissance est obligatoire.")
+        
+        today = date.today()
+        age = today.year - date_naissance.year - ((today.month, today.day) < (date_naissance.month, date_naissance.day))
+
         if age < 15:
-            raise ValidationError("L'âge doit être supérieur ou égal à 15 ans.")
-        return age
-    
+            raise forms.ValidationError("Vous devez avoir au moins 15 ans.")
+
+        return date_naissance
+
+
 
 

@@ -1,0 +1,98 @@
+<!-- app_mentorlink/templates/room.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Salon : {{ room.name }}</h1>
+    <div id="chat-messages" class="border p-3 mb-3" style="height: 400px; overflow-y: scroll;">
+        <!-- Les messages seront insérés ici par JavaScript -->
+    </div>
+    <form id="chat-form" class="d-flex gap-2">
+        <input type="text" id="message-input" class="form-control" placeholder="Écrire un message..." required>
+        <button type="submit" class="btn btn-primary">Envoyer</button>
+    </form>
+
+    <script>
+        const roomSlug = "{{ room.slug | escapejs }}";
+        const username = "{{ request.user.username | escapejs }}";
+        const wsUrl = `ws://${window.location.host}/ws/${roomSlug}/`;
+
+        // Initialiser IndexedDB
+        let db;
+        const dbRequest = indexedDB.open("MentorLinkDB", 1);
+        dbRequest.onupgradeneeded = function(event) {
+            db = event.target.result;
+            if (!db.objectStoreNames.contains("messages")) {
+                db.createObjectStore("messages", { keyPath: "id", autoIncrement: true });
+            }
+        };
+        dbRequest.onsuccess = function(event) {
+            db = event.target.result;
+            displayMessages(roomSlug);
+        };
+
+        // Afficher les messages depuis IndexedDB
+        async function displayMessages(roomSlug) {
+            const transaction = db.transaction(["messages"], "readonly");
+            const store = transaction.objectStore("messages");
+            const messagesDiv = document.getElementById("chat-messages");
+            messagesDiv.innerHTML = "";
+            const request = store.getAll();
+            request.onsuccess = function() {
+                request.result
+                    .filter(msg => msg.roomSlug === roomSlug)
+                    .forEach(msg => {
+                        const div = document.createElement("div");
+                        div.innerHTML = `<b>${msg.username}</b>: ${msg.content} <small>${msg.timestamp}</small>`;
+                        messagesDiv.appendChild(div);
+                    });
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            };
+        }
+
+        // Ajouter un message à IndexedDB
+        async function addMessage(roomSlug, username, content, timestamp) {
+            const transaction = db.transaction(["messages"], "readwrite");
+            const store = transaction.objectStore("messages");
+            store.add({ roomSlug, username, content, timestamp });
+        }
+
+        // Configurer le WebSocket
+        const ws = new WebSocket(wsUrl);
+        ws.onopen = function() {
+            console.log("WebSocket connecté pour le salon:", roomSlug);
+        };
+        ws.onmessage = async function(event) {
+            const data = JSON.parse(event.data);
+            if (data.message) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data.message, "text/html");
+                const p = doc.querySelector("p");
+                const msgUsername = p.querySelector("b").textContent;
+                const msgContent = p.textContent.split(": ")[1].split(" [")[0];
+                const msgTimestamp = p.querySelector("small").textContent;
+                await addMessage(roomSlug, msgUsername, msgContent, msgTimestamp);
+                await displayMessages(roomSlug);
+            }
+        };
+        ws.onclose = function() {
+            console.log("WebSocket déconnecté");
+        };
+        ws.onerror = function(error) {
+            console.error("Erreur WebSocket:", error);
+        };
+
+        // Gérer l'envoi de messages
+        document.getElementById("chat-form").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const input = document.getElementById("message-input");
+            const content = input.value.trim();
+            if (content) {
+                const timestamp = new Date().toLocaleString();
+                ws.send(JSON.stringify({
+                    message: `<p><b>${username}</b>: ${content} <small>${timestamp}</small></p>`
+                }));
+                input.value = "";
+            }
+        });
+    </script>
+{% endblock %}

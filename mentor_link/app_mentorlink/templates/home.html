@@ -26,6 +26,8 @@
                     {% else %}
                         Utilisateur inconnu
                     {% endif %}<br>
+
+                    <a href="{% url 'annonce_detail' annonce.id %}" class="btn btn-primary mt-2">Voir l'annonce</a>
                 </div>
             </li>
             <hr>

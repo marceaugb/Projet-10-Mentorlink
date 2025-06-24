@@ -1,24 +1,23 @@
-# Mettre à jour la fonction search dans views.py
 from django.shortcuts import render, redirect
-from .models import Utilisateur, Annonce
+from .models import Utilisateur, Annonce, Room
 from django.contrib.auth.decorators import login_required
 from .forms import *
 from django.contrib.auth import authenticate, login
 from django.db.models import Q
 from django.contrib.auth.forms import AuthenticationForm
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import Message
+from django.contrib.auth.models import User
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.conf import settings
 
 def home(request):
     personnes = Utilisateur.objects.all()  # Récupère toutes les personnes
     annonces = Annonce.objects.all()  # Récupère toutes les annonces
     context = {'personnes': personnes, 'annonces': annonces}
-    if request.user.is_authenticated:
-        return render(request, 'home.html', context)
-    else:
-        return render(request, 'home_nonconnecte.html', context)
-
-@login_required
-def messages(request):
-   return render(request,'messages.html')
+    return render(request, 'home.html', context)
 
 @login_required
 def depose_annonce(request):
@@ -35,7 +34,7 @@ def depose_annonce(request):
             annonce.save()
             
             # Rediriger vers une page de succès ou la liste des annonces
-            return redirect('liste_annonces')  # Remplacez par le nom de votre vue
+            return redirect('home')  # Remplacez par le nom de votre vue
     else:
         form = AnnonceForm()
     
@@ -45,7 +44,6 @@ def depose_annonce(request):
 def confirmation(request):
     return render(request, 'confirmation.html')
 
-@login_required
 def search(request):
     query = request.GET.get('q', '')
     results = []
@@ -68,10 +66,10 @@ def search(request):
 def profil(request):
     if request.method == 'POST':
         user = request.user
-        user.nom = request.POST.get('nom')
-        user.prenom = request.POST.get('prenom')
+        user.last_name = request.POST.get('nom')
+        user.first_name = request.POST.get('prenom')
         user.civilite = request.POST.get('civilite')
-        user.age = request.POST.get('naissance')  # Mise à jour de l'âge
+        user.date_naissance = request.POST.get('date_naissance')  # avec mise à jour de l'âge
         user.adresse = request.POST.get('adresse')
         user.email = request.POST.get('email')
         user.save()
@@ -117,12 +115,6 @@ def loginperso(request):
 
     return render(request, 'login.html', {'form': form})
 
-def liste_annonces(request):
-    annonces = Annonce.objects.all()
-    return render(request, 'liste_annonces.html', {'annonces': annonces})
-
-
-@login_required
 def annonces_utilisateur(request, user_id=None):
     """
     Affiche toutes les annonces d'un utilisateur spécifique.
@@ -152,7 +144,7 @@ def annonces_utilisateur(request, user_id=None):
     return render(request, 'annonces_utilisateur.html', context)
 
 
-@login_required
+
 def annonce_detail(request, annonce_id):
     """
     Affiche le détail d'une annonce spécifique.
@@ -217,3 +209,29 @@ def supprimer_annonce(request, annonce_id):
     }
     
     return render(request, 'confirmer_suppression.html', context)
+
+@login_required
+def room(request, slug):
+    print(f"Room view called with slug: {slug}")
+    room = get_object_or_404(Room, slug=slug)
+    return render(request, 'room.html', {'room': room})
+
+@login_required
+def start_private_chat(request, annonce_id):
+    annonce = get_object_or_404(Annonce, id=annonce_id)
+    user = request.user
+    author = annonce.id_personnes  # ForeignKey to Utilisateur
+
+    # Check if a room exists between the two users
+    room = Room.objects.filter(users=user).filter(users=author).first()
+    if not room:
+        # Create a room for the two users
+        room_name = f"Chat: {user.username} - {author.username}"
+        room_slug = f"room-{min(user.id, author.id)}-{max(user.id, author.id)}"  # Changed to "room-"
+        room = Room.objects.create(name=room_name, slug=room_slug)
+        room.users.add(user, author)
+
+    return JsonResponse({'room_slug': room.slug})
+
+def my_messages(request):
+    return render(request, 'my_messages.html')

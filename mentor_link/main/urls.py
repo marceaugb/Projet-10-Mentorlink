@@ -24,7 +24,6 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('messages/', views.messages, name='messages'),
     path('search/', views.search, name='search'),
     path('profil/', views.profil, name='profil'),
     path('depose_annonce/', views.depose_annonce, name='depose_annonce'),
@@ -34,12 +33,14 @@ urlpatterns = [
     path('depose_annonce/', views.depose_annonce, name='depose_annonce'),
     path('confirmation/', views.confirmation, name='confirmation'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-    path('liste_annonces/', views.liste_annonces, name='liste_annonces'),
     path('mes-annonces/', views.annonces_utilisateur, name='mes_annonces'),
     path('utilisateur/<int:user_id>/annonces/', views.annonces_utilisateur, name='annonces_utilisateur'),
     path('annonce/<int:annonce_id>/', views.annonce_detail, name='annonce_detail'),
     path('annonce/<int:annonce_id>/modifier/', views.modifier_annonce, name='modifier_annonce'),
     path('annonce/<int:annonce_id>/supprimer/', views.supprimer_annonce, name='supprimer_annonce'),
+    path('<slug:slug>/', views.room, name='room'),
+    path('annonce/<int:annonce_id>/start-chat/', views.start_private_chat, name='start_private_chat'),
+    path('mes-messages/', views.my_messages, name='my_messages'),
 ]
 
 

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Conversation</h2>
+
+<div id="chat-log" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto;">
+  {% for message in messages %}
+    <div><strong>{{ message.sender.username }}:</strong> {{ message.content }}</div>
+  {% endfor %}
+</div>
+
+<div style="margin-top: 10px;">
+  <textarea id="chat-message-input" rows="2" style="width: 100%;"></textarea>
+  <button id="chat-message-submit">Envoyer</button>
+</div>
+
+<script>
+  const conversationId = "{{ conversation.id }}";
+  const userId = "{{ request.user.id }}";
+  const socket = new WebSocket(
+    'ws://' + window.location.host + '/ws/chat/' + conversationId + '/'
+  );
+
+  socket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    const chatLog = document.querySelector('#chat-log');
+    chatLog.innerHTML += `<div><strong>${data.sender}:</strong> ${data.message}</div>`;
+    chatLog.scrollTop = chatLog.scrollHeight;
+  };
+
+  document.querySelector('#chat-message-submit').onclick = function(e) {
+    const input = document.querySelector('#chat-message-input');
+    const message = input.value.trim();
+    if (message !== '') {
+      socket.send(JSON.stringify({
+        'message': message,
+        'sender_id': userId
+      }));
+      input.value = '';
+    }
+  };
+</script>
+{% endblock %}
