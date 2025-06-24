@@ -12,12 +12,47 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
+from django.core.paginator import Paginator
 
 def home(request):
-    personnes = Utilisateur.objects.all()  # Récupère toutes les personnes
-    annonces = Annonce.objects.all()  # Récupère toutes les annonces
-    context = {'personnes': personnes, 'annonces': annonces}
+    personnes = Utilisateur.objects.all()
+    annonces = Annonce.objects.all().order_by('-id')  # Tri par ID décroissant (plus récentes en premier)
+    
+    # Pagination
+    paginator = Paginator(annonces, 12)  # 12 annonces par page (3x4 sur desktop)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'personnes': personnes, 
+        'annonces': page_obj,  # Remplace annonces par page_obj
+        'page_obj': page_obj   # Ajout pour la navigation
+    }
     return render(request, 'home.html', context)
+
+def search(request):
+    query = request.GET.get('q', '')
+    results = []
+    
+    if query:
+        # Recherche dans les champs metier et description
+        results = Annonce.objects.filter(
+            Q(metier__icontains=query) | 
+            Q(description__icontains=query)
+        ).order_by('-id')
+    
+    # Pagination pour les résultats de recherche
+    paginator = Paginator(results, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    context = {
+        'query': query,
+        'results': page_obj,  # Remplace results par page_obj
+        'page_obj': page_obj
+    }
+    
+    return render(request, 'search.html', context)
 
 @login_required
 def depose_annonce(request):
@@ -43,24 +78,6 @@ def depose_annonce(request):
 @login_required
 def confirmation(request):
     return render(request, 'confirmation.html')
-
-def search(request):
-    query = request.GET.get('q', '')
-    results = []
-    
-    if query:
-        # Recherche dans les champs metier et description
-        results = Annonce.objects.filter(
-            Q(metier__icontains=query) | 
-            Q(description__icontains=query)
-        )
-    
-    context = {
-        'query': query,
-        'results': results
-    }
-    
-    return render(request, 'search.html', context)
 
 @login_required
 def profil(request):
@@ -90,7 +107,6 @@ def signup(request):
         form = UtilisateurForm()
 
     return render(request, 'signup.html', {'form': form})
-
 
 def loginperso(request):
     if request.method == 'POST':
@@ -135,15 +151,19 @@ def annonces_utilisateur(request, user_id=None):
     # Récupérer toutes les annonces de l'utilisateur
     annonces = Annonce.objects.filter(id_personnes=utilisateur).order_by('-id')
     
+    # Pagination pour les annonces utilisateur
+    paginator = Paginator(annonces, 8)  # 8 annonces par page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
     context = {
         'utilisateur': utilisateur,
-        'annonces': annonces,
+        'annonces': page_obj,
+        'page_obj': page_obj,
         'titre': titre,
     }
     
     return render(request, 'annonces_utilisateur.html', context)
-
-
 
 def annonce_detail(request, annonce_id):
     """
@@ -159,7 +179,6 @@ def annonce_detail(request, annonce_id):
     }
     
     return render(request, 'annonce_detail.html', context)
-
 
 @login_required
 def modifier_annonce(request, annonce_id):
