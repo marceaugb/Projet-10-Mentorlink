@@ -33,7 +33,7 @@ ALLOWED_HOSTS = ["157.159.195.115", "localhost", "127.0.0.1"]
 
 
 # Application definition
-ASGI_APPLICATION = "main.asgi.application"
+
 INSTALLED_APPS = [
     'daphne',
     'django.contrib.admin',
