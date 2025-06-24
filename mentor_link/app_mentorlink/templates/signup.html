@@ -77,7 +77,7 @@
         if (!dateInput) return;
 
         let today = new Date();
-        let minDate = new Date(today.getFullYear() - 15, today.getMonth(), today.getDate());
+        let minDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
 
         // Bloquer les dates pour moins de 15 ans
         dateInput.max = minDate.toISOString().split("T")[0];
@@ -96,8 +96,8 @@
                 age--;
             }
 
-            if (age < 15) {
-                alert("Vous devez avoir au moins 15 ans !");
+            if (age < 18) {
+                alert("Vous devez avoir au moins 18 ans !");
                 event.preventDefault();
             }
         });
