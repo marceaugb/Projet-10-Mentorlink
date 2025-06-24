@@ -5,11 +5,10 @@ from django.core.exceptions import ValidationError
 from django.conf import settings
 
 def validate_birthdate(value):
-    """Vérifie si l'utilisateur a au moins 15 ans."""
     today = date.today()
     age = today.year - value.year - ((today.month, today.day) < (value.month, value.day))
-    if age < 15:
-        raise ValidationError("Vous devez avoir au moins 15 ans.")
+    if age < 18:
+        raise ValidationError("Vous devez avoir au moins 18 ans.")
     
 class Utilisateur(AbstractUser):
     GENRE_CHOICES = [
