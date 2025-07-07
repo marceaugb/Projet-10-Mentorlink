@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Mes Messages - MentorLink{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-envelope"></i> Mes Conversations</h2>
+            <span class="badge bg-primary" id="total-conversations">{{ conversations|length }} conversation{{ conversations|length|pluralize }}</span>
+        </div>
+
+        {% if conversations %}
+            <div class="list-group" id="conversations-list">
+                {% for conv in conversations %}
+                <a href="{% url 'room' conv.room.slug %}" class="list-group-item list-group-item-action conversation-item" 
+                   data-room-slug="{{ conv.room.slug }}">
+                    <div class="d-flex w-100 justify-content-between align-items-center">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="mb-1">
+                                    <i class="fas fa-user-circle me-2"></i>
+                                    {{ conv.other_user.first_name }} {{ conv.other_user.last_name }}
+                                    <small class="text-muted">(@{{ conv.other_user.username }})</small>
+                                </h6>
+                                <small class="text-muted last-message-time" data-room="{{ conv.room.slug }}">
+                                    {{ conv.last_message_time|date:"d/m H:i"|default:"" }}
+                                </small>
+                            </div>
+                            
+                            <p class="mb-1 text-truncate last-message-content" style="max-width: 500px;">
+                                <span class="last-message-preview" data-room="{{ conv.room.slug }}">
+                                    {% if conv.last_message %}
+                                        <strong>
+                                            {% if conv.last_message.user == request.user %}
+                                                Vous: 
+                                            {% else %}
+                                                {{ conv.last_message.user.username }}: 
+                                            {% endif %}
+                                        </strong>
+                                        {{ conv.last_message.content|truncatechars:50 }}
+                                    {% else %}
+                                        <span class="text-muted">Aucun message</span>
+                                    {% endif %}
+                                </span>
+                            </p>
+                        </div>
+                        
+                        <span class="badge bg-danger rounded-pill ms-2 unread-badge" 
+                              data-room="{{ conv.room.slug }}" 
+                              {% if conv.unread_count > 0 %}style="display: inline;"{% else %}style="display: none;"{% endif %}>
+                            {{ conv.unread_count|default:0 }}
+                        </span>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                <h4 class="text-muted">Aucune conversation</h4>
+                <p class="text-muted">Vous n'avez pas encore de conversations. Contactez un mentor via ses annonces pour commencer à échanger.</p>
+                <a href="{% url 'home' %}" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Parcourir les annonces
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Actualiser la page automatiquement toutes les 30 secondes
+    setInterval(function() {
+        updateConversationPreviews();
+    }, 30000);
+
+    // Mettre à jour via AJAX sans recharger la page
+    function updateConversationPreviews() {
+        fetch('/api/conversations/')
+            .then(response => response.json())
+            .then(data => {
+                data.conversations.forEach(conv => {
+                    updateConversationItem(conv);
+                });
+            })
+            .catch(error => console.error('Erreur lors de la mise à jour:', error));
+    }
+
+    function updateConversationItem(conv) {
+        const roomSlug = conv.slug;
+        const lastMessageContent = document.querySelector(`[data-room="${roomSlug}"] .last-message-preview`);
+        const lastMessageTime = document.querySelector(`[data-room="${roomSlug}"].last-message-time`);
+        const unreadBadge = document.querySelector(`[data-room="${roomSlug}"].unread-badge`);
+
+        if (lastMessageContent && conv.last_message) {
+            const isFromCurrentUser = conv.last_message_from_current_user;
+            const prefix = isFromCurrentUser ? 'Vous: ' : `${conv.participant_username}: `;
+            lastMessageContent.innerHTML = `<strong>${prefix}</strong>${conv.last_message}`;
+        }
+
+        if (lastMessageTime && conv.timestamp) {
+            lastMessageTime.textContent = conv.timestamp;
+        }
+
+        if (unreadBadge) {
+            if (conv.unread_count > 0) {
+                unreadBadge.textContent = conv.unread_count;
+                unreadBadge.style.display = 'inline';
+            } else {
+                unreadBadge.style.display = 'none';
+            }
+        }
+    }
+
+    // Actualiser immédiatement
+    updateConversationPreviews();
+});
+</script>
+
+<style>
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.conversation-item {
+    transition: background-color 0.2s ease;
+}
+
+.last-message-content {
+    font-size: 0.9em;
+}
+
+.last-message-time {
+    font-size: 0.8em;
+}
+</style>
+{% endblock %}

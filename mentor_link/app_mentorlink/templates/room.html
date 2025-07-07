@@ -1,98 +1,476 @@
-<!-- app_mentorlink/templates/room.html -->
 {% extends 'base.html' %}
 
+{% block title %}Conversation - {{ room.name }}{% endblock %}
+
 {% block content %}
-    <h1>Salon : {{ room.name }}</h1>
-    <div id="chat-messages" class="border p-3 mb-3" style="height: 400px; overflow-y: scroll;">
-        <!-- Les messages seront insérés ici par JavaScript -->
+<div class="chat-container">
+    <!-- En-tête de la conversation -->
+    <div class="chat-header">
+        <div class="chat-header-info">
+            <h3>{{ room.name }}</h3>
+            <div class="connection-status">
+                <span id="status-indicator" class="status-dot offline">●</span>
+                <span id="status-text">Connexion...</span>
+            </div>
+        </div>
+        <div class="chat-actions">
+            <a href="{% url 'all_messages' %}" class="btn btn-outline">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+        </div>
     </div>
-    <form id="chat-form" class="d-flex gap-2">
-        <input type="text" id="message-input" class="form-control" placeholder="Écrire un message..." required>
-        <button type="submit" class="btn btn-primary">Envoyer</button>
-    </form>
 
-    <script>
-        const roomSlug = "{{ room.slug | escapejs }}";
-        const username = "{{ request.user.username | escapejs }}";
-        const wsUrl = `ws://${window.location.host}/ws/${roomSlug}/`;
+    <!-- Zone de chat -->
+    <div class="chat-body">
+        <div id="chat-log" class="chat-messages">
+            {% for message in messages %}
+                <div class="message {% if message.user == request.user %}message-sent{% else %}message-received{% endif %}">
+                    <div class="message-content">
+                        {% if message.user != request.user %}
+                            <div class="message-author">{{ message.user.username }}</div>
+                        {% endif %}
+                        <div class="message-text">{{ message.content }}</div>
+                        <div class="message-time">{{ message.timestamp|date:"H:i" }}</div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="empty-chat">
+                    <div class="empty-chat-icon">💬</div>
+                    <p>Aucun message pour le moment</p>
+                    <p class="text-muted">Commencez la conversation !</p>
+                </div>
+            {% endfor %}
+        </div>
 
-        // Initialiser IndexedDB
-        let db;
-        const dbRequest = indexedDB.open("MentorLinkDB", 1);
-        dbRequest.onupgradeneeded = function(event) {
-            db = event.target.result;
-            if (!db.objectStoreNames.contains("messages")) {
-                db.createObjectStore("messages", { keyPath: "id", autoIncrement: true });
-            }
-        };
-        dbRequest.onsuccess = function(event) {
-            db = event.target.result;
-            displayMessages(roomSlug);
-        };
+        <!-- Indicateur de frappe -->
+        <div id="typing-indicator" class="typing-indicator" style="display: none;">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <span class="typing-text">En train d'écrire...</span>
+        </div>
+    </div>
 
-        // Afficher les messages depuis IndexedDB
-        async function displayMessages(roomSlug) {
-            const transaction = db.transaction(["messages"], "readonly");
-            const store = transaction.objectStore("messages");
-            const messagesDiv = document.getElementById("chat-messages");
-            messagesDiv.innerHTML = "";
-            const request = store.getAll();
-            request.onsuccess = function() {
-                request.result
-                    .filter(msg => msg.roomSlug === roomSlug)
-                    .forEach(msg => {
-                        const div = document.createElement("div");
-                        div.innerHTML = `<b>${msg.username}</b>: ${msg.content} <small>${msg.timestamp}</small>`;
-                        messagesDiv.appendChild(div);
-                    });
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            };
+    <!-- Zone de saisie -->
+    <div class="chat-footer">
+        <div class="message-input-container">
+            <input id="chat-message-input" 
+                   type="text" 
+                   placeholder="Tapez votre message..."
+                   autocomplete="off"
+                   maxlength="500">
+            <button id="chat-message-submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+        <div class="chat-info">
+            <span id="char-count">0/500</span>
+        </div>
+    </div>
+</div>
+
+<style>
+.chat-container {
+    max-width: 800px;
+    margin: 0 auto;
+    height: 80vh;
+    border: 1px solid #e1e8ed;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.chat-header {
+    padding: 16px 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e1e8ed;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-header-info h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #1a1a1a;
+}
+
+.connection-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #657786;
+    margin-top: 4px;
+}
+
+.status-dot {
+    font-size: 8px;
+    transition: color 0.3s ease;
+}
+
+.status-dot.online { color: #1da1f2; }
+.status-dot.offline { color: #657786; }
+.status-dot.error { color: #e0245e; }
+
+.chat-body {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background: #f7f9fa;
+    scroll-behavior: smooth;
+}
+
+.message {
+    margin-bottom: 16px;
+    display: flex;
+    animation: fadeIn 0.3s ease;
+}
+
+.message-sent {
+    justify-content: flex-end;
+}
+
+.message-received {
+    justify-content: flex-start;
+}
+
+.message-content {
+    max-width: 70%;
+    position: relative;
+}
+
+.message-sent .message-content {
+    background: #1da1f2;
+    color: white;
+    border-radius: 18px 18px 6px 18px;
+    padding: 12px 16px;
+}
+
+.message-received .message-content {
+    background: white;
+    color: #1a1a1a;
+    border-radius: 18px 18px 18px 6px;
+    padding: 12px 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.message-author {
+    font-size: 11px;
+    color: #657786;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.message-text {
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.message-time {
+    font-size: 10px;
+    opacity: 0.7;
+    margin-top: 4px;
+    text-align: right;
+}
+
+.message-sent .message-time {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.message-received .message-time {
+    color: #657786;
+}
+
+.empty-chat {
+    text-align: center;
+    padding: 40px 20px;
+    color: #657786;
+}
+
+.empty-chat-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.typing-indicator {
+    padding: 8px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #657786;
+    background: rgba(29, 161, 242, 0.05);
+}
+
+.typing-dots {
+    display: flex;
+    gap: 2px;
+}
+
+.typing-dots span {
+    width: 4px;
+    height: 4px;
+    background: #1da1f2;
+    border-radius: 50%;
+    animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+.chat-footer {
+    background: white;
+    border-top: 1px solid #e1e8ed;
+    padding: 16px 20px;
+}
+
+.message-input-container {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+#chat-message-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #e1e8ed;
+    border-radius: 24px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+#chat-message-input:focus {
+    border-color: #1da1f2;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-primary {
+    background: #1da1f2;
+    color: white;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    justify-content: center;
+    padding: 0;
+}
+
+.btn-primary:hover {
+    background: #1991da;
+    transform: scale(1.05);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #e1e8ed;
+    color: #1a1a1a;
+}
+
+.btn-outline:hover {
+    background: #f7f9fa;
+}
+
+.chat-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    font-size: 11px;
+    color: #657786;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes typing {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-10px); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .chat-container {
+        height: 100vh;
+        border-radius: 0;
+        margin: 0;
+    }
+    
+    .message-content {
+        max-width: 85%;
+    }
+    
+    .chat-header {
+        padding: 12px 16px;
+    }
+    
+    .chat-messages {
+        padding: 16px;
+    }
+    
+    .chat-footer {
+        padding: 12px 16px;
+    }
+}
+
+/* Scrollbar personnalisée */
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+</style>
+<script>
+    const roomSlug = '{{ room.slug }}';
+    const currentUser = '{{ request.user.username }}';
+    
+    // Connexion WebSocket
+    const chatSocket = new WebSocket(
+        'ws://' + window.location.host + '/ws/' + roomSlug + '/'
+    );
+
+    // Éléments DOM
+    const statusIndicator = document.getElementById('status-indicator');
+    const statusText = document.getElementById('status-text');
+    const chatLog = document.querySelector('.chat-messages'); // ✅ Bon sélecteur
+    const messageInput = document.querySelector('#chat-message-input');
+    const submitButton = document.querySelector('#chat-message-submit');
+    const charCount = document.getElementById('char-count');
+
+    // Gestion de la connexion
+    chatSocket.onopen = function(e) {
+        statusIndicator.className = 'status-dot online';
+        statusText.textContent = 'Connecté';
+        console.log('WebSocket connecté');
+    };
+
+    // ✅ RÉCEPTION DES MESSAGES - VERSION SIMPLIFIÉE
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        console.log('Message reçu:', data); // Debug
+        
+        // Créer l'élément message
+        const messageElement = document.createElement('div');
+        const isOwnMessage = data.user === currentUser;
+        
+        messageElement.className = `message ${isOwnMessage ? 'message-sent' : 'message-received'}`;
+        messageElement.innerHTML = `
+            <div class="message-content">
+                ${!isOwnMessage ? `<div class="message-author">${data.user}</div>` : ''}
+                <div class="message-text">${data.message}</div>
+                <div class="message-time">${new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'})}</div>
+            </div>
+        `;
+        
+        chatLog.appendChild(messageElement);
+        chatLog.scrollTop = chatLog.scrollHeight;
+    };
+
+    chatSocket.onclose = function(e) {
+        statusIndicator.className = 'status-dot error';
+        statusText.textContent = 'Déconnecté';
+        console.log('WebSocket fermé');
+    };
+
+    chatSocket.onerror = function(e) {
+        statusIndicator.className = 'status-dot error';
+        statusText.textContent = 'Erreur de connexion';
+        console.error('Erreur WebSocket:', e);
+    };
+
+    // ✅ ENVOI DES MESSAGES - VERSION SIMPLIFIÉE
+    function sendMessage() {
+        const message = messageInput.value.trim();
+        
+        if (message) {
+            // Envoyer dans l'ancien format pour compatibilité
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInput.value = '';
+            updateCharCount();
         }
+    }
 
-        // Ajouter un message à IndexedDB
-        async function addMessage(roomSlug, username, content, timestamp) {
-            const transaction = db.transaction(["messages"], "readwrite");
-            const store = transaction.objectStore("messages");
-            store.add({ roomSlug, username, content, timestamp });
-        }
-
-        // Configurer le WebSocket
-        const ws = new WebSocket(wsUrl);
-        ws.onopen = function() {
-            console.log("WebSocket connecté pour le salon:", roomSlug);
-        };
-        ws.onmessage = async function(event) {
-            const data = JSON.parse(event.data);
-            if (data.message) {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(data.message, "text/html");
-                const p = doc.querySelector("p");
-                const msgUsername = p.querySelector("b").textContent;
-                const msgContent = p.textContent.split(": ")[1].split(" [")[0];
-                const msgTimestamp = p.querySelector("small").textContent;
-                await addMessage(roomSlug, msgUsername, msgContent, msgTimestamp);
-                await displayMessages(roomSlug);
+    // Gestion du compteur de caractères
+    function updateCharCount() {
+        const count = messageInput.value.length;
+        if (charCount) {
+            charCount.textContent = `${count}/500`;
+            
+            if (count > 450) {
+                charCount.style.color = '#e0245e';
+            } else if (count > 400) {
+                charCount.style.color = '#ff8c00';
+            } else {
+                charCount.style.color = '#657786';
             }
-        };
-        ws.onclose = function() {
-            console.log("WebSocket déconnecté");
-        };
-        ws.onerror = function(error) {
-            console.error("Erreur WebSocket:", error);
-        };
+        }
+    }
 
-        // Gérer l'envoi de messages
-        document.getElementById("chat-form").addEventListener("submit", async function(event) {
-            event.preventDefault();
-            const input = document.getElementById("message-input");
-            const content = input.value.trim();
-            if (content) {
-                const timestamp = new Date().toLocaleString();
-                ws.send(JSON.stringify({
-                    message: `<p><b>${username}</b>: ${content} <small>${timestamp}</small></p>`
-                }));
-                input.value = "";
+    // Événements
+    if (submitButton) {
+        submitButton.onclick = sendMessage;
+    }
+    
+    if (messageInput) {
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
             }
         });
-    </script>
+
+        messageInput.addEventListener('input', updateCharCount);
+    }
+
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', function() {
+        if (chatLog) {
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+        if (messageInput) {
+            messageInput.focus();
+        }
+    });
+</script>
+
 {% endblock %}
