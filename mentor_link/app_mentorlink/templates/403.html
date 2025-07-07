@@ -1,0 +1,14 @@
+{% extends 'base_error.html' %}
+
+{% block title %}Accès interdit - MentorLink{% endblock %}
+
+{% block icon %}🚫{% endblock %}
+
+{% block error_code %}403{% endblock %}
+
+{% block error_title %}Accès interdit{% endblock %}
+
+{% block error_message %}
+    Vous n'avez pas l'autorisation d'accéder à cette page. 
+    Connectez-vous avec un compte approprié ou contactez l'administrateur.
+{% endblock %}
