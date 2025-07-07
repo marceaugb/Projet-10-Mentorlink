@@ -1,493 +1,325 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="fr" hx-debug="true">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
-    <title>{% block title %}Mentorlink - Page d'accueil{% endblock %}</title>  
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MentorLink - Plateforme de Mentorat{% endblock %}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- CSS personnalisé -->
     <style>
-        .badge {
-            display: inline-block;
-            padding: 0.25em 0.4em;
-            font-size: 75%;
-            font-weight: 700;
-            line-height: 1;
-            color: #fff;
-            text-align: center;
-            white-space: nowrap;
-            vertical-align: baseline;
-            border-radius: 0.25rem;
-        }
-
-        .badge-danger {
-            background-color: #dc3545;
-        }
-
-        .unread-popup {
-            position: fixed;
-            top: 60px;
-            right: 20px;
-            background-color: #007bff;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            z-index: 1000;
-            display: none;
-        }
-
-        .unread-popup.show {
-            display: block;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        body {
-            font-family: Arial, sans-serif;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-        header, nav {
-            display: flex;
-            align-items: center;
-            padding: 1em;
-            background: #f7f7f7;
-            border-bottom: 1px solid #ccc;
-        }
-        nav a, nav button, nav input[type="search"] {
-            margin: 0 0.5em;
-        }
-        nav a, nav button {
-            text-decoration: none;
-            color: #333;
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-        nav input[type="search"] {
-            padding: 0.3em;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            width: 200px;
-        }
-        #main-content {
-            padding: 2em;
-        }
-
-        section {
-            margin-bottom: 2em;
-        }
-
-        h2, h3 {
-            margin-top: 1em;
-        }
-
-        .form-group {
-            margin-bottom: 1em;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.3em;
-        }
-
-        .form-group input[type="text"], .form-group textarea {
-            width: 100%;
-            padding: 0.5em;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .form-actions {
-            margin-top: 1em;
-        }
-
-        .form-actions button {
-            background: #f9a97d;
-            border: none;
-            padding: 0.7em 1em;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .annonce-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1em;
-        }
-        .annonce-card {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 1em;
-            background: #fff;
-            display: flex;
-            align-items: flex-start;
-            cursor: pointer;
-        }
-        .annonce-card img {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            margin-right: 1em;
-        }
-
-        footer {
-            padding: 1em;
-            background: #eee;
-            display: flex;
-        }
-        .footer-legal {
-            margin-right: 2em;
-        }
-        .footer-legal ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .footer-legal li {
-            margin-bottom: 0.5em;
-        }
-
-        .annonce-detail {
-            display: flex;
-            gap: 2em;
-        }
-        .annonce-detail .image-profil {
-            flex: 1;
-            text-align: center;
-        }
-        .annonce-detail .image-profil img {
-            max-width: 200px;
-            border-radius: 5px;
-        }
-        .annonce-detail .side-info {
-            flex: 1;
-        }
-        .description {
-            margin-top: 1em;
-        }
-
-        .message-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1em;
-        }
-        .message-thread {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 1em;
-            background: #fff;
-        }
-        .message-sender {
-            font-weight: bold;
-            margin-bottom: 0.5em;
-        }
-        .message-preview {
-            color: #555;
-        }
-
-        /* Rendre le nom Mentorlink cliquable */
-        .logo-btn {
-            font-weight: bold; 
-            font-size: 2em; 
-            margin-right: auto; 
-            background: none; 
-            border: none; 
-            cursor: pointer;
-            color: #333;
+        :root {
+            --primary-pink: #FF6B6B;
+            --primary-cyan: #4ECDC4;
+            --dark-gray: #2C3E50;
+            --light-gray: #F8F9FA;
+            --white: #FFFFFF;
+            --gradient: linear-gradient(135deg, var(--primary-pink) 0%, var(--primary-cyan) 100%);
         }
         
-        /* Style pour l'indicateur de recherche */
-        .htmx-indicator {
-            display: none;
-        }
-        .htmx-request .htmx-indicator {
-            display: inline;
-            margin-left: 0.5em;
-            font-size: 0.8em;
-            color: #555;
-        }
-        .card {
-            border-radius: 15px;
-            background: #ffffff;
-            color: #333;
-        }
-        .btn-orange {
-            background-color: #ff9800;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            color: white;
-        }
-        .btn-orange:hover {
-            background-color: #e68900;
-        }
-        h2 {
-            font-weight: bold;
-        }
-
-        .messages-button {
-            position: relative;
-            display: flex;
-            align-items: center;
-            space-x: 8px;
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            color: #1d4ed8;
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin: 0 16px;
-        }
-
-        .messages-button:hover {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .notification-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #ef4444;
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: pulse 2s infinite;
-        }
-
-        .messages-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            margin-top: 8px;
-            width: 320px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            border: 1px solid #e5e7eb;
-            z-index: 1000;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .dropdown-header {
-            padding: 12px;
-            border-bottom: 1px solid #f3f4f6;
-        }
-
-        .dropdown-header h3 {
+        * {
             margin: 0;
-            font-size: 14px;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-gray);
+            background-color: var(--white);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        /* Navigation moderne */
+        .navbar {
+            background: var(--white) !important;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-brand img {
+            height: 60px;
+            width: auto;
+            transition: transform 0.3s ease;
+        }
+        
+        .navbar-brand img:hover {
+            transform: scale(1.05);
+        }
+        
+        .navbar-nav .nav-link {
+            color: var(--dark-gray) !important;
+            font-weight: 500;
+            margin: 0 0.5rem;
+            padding: 0.5rem 1rem !important;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            background: var(--gradient);
+            color: var(--white) !important;
+            transform: translateY(-2px);
+        }
+        
+        /* Boutons avec gradient */
+        .btn-primary {
+            background: var(--gradient);
+            border: none;
+            border-radius: 25px;
+            padding: 0.75rem 2rem;
             font-weight: 600;
-            color: #374151;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
         }
-
-        .conversation-item {
-            padding: 12px;
-            border-bottom: 1px solid #f9fafb;
-            cursor: pointer;
-            transition: background 0.2s;
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3);
         }
-
-        .conversation-item:hover {
-            background: #f9fafb;
+        
+        .btn-outline-primary {
+            border: 2px solid var(--primary-pink);
+            color: var(--primary-pink);
+            border-radius: 25px;
+            padding: 0.75rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
-
-        .conversation-item:last-child {
-            border-bottom: none;
+        
+        .btn-outline-primary:hover {
+            background: var(--gradient);
+            border-color: transparent;
+            color: var(--white);
+            transform: translateY(-3px);
         }
-
+        
+        /* Cards modernes */
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            background: var(--gradient);
+            color: var(--white);
+            border: none;
+            padding: 1.5rem;
+            font-weight: 600;
+        }
+        
+        /* Alertes personnalisées */
+        .alert {
+            border: none;
+            border-radius: 15px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .alert-success {
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.1) 0%, rgba(78, 205, 196, 0.2) 100%);
+            color: var(--primary-cyan);
+            border-left: 4px solid var(--primary-cyan);
+        }
+        
+        .alert-danger {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(255, 107, 107, 0.2) 100%);
+            color: var(--primary-pink);
+            border-left: 4px solid var(--primary-pink);
+        }
+        
+        /* Footer moderne */
+        footer {
+            background-color: #343a40;
+            color: white;
+            padding: 20px 0;
+            margin-top: auto;
+        }
+        
+        footer h5 {
+            color: var(--primary-cyan);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        
+        footer a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        footer a:hover {
+            color: var(--primary-pink);
+            transform: translateX(5px);
+        }
+        
+        /* Conteneur principal */
+        main {
+            flex: 1;
+            padding: 2rem 0;
+        }
+        
+        /* Dropdown menu */
+        .dropdown-menu {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+        
+        .dropdown-item {
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-item:hover {
+            background: var(--gradient);
+            color: var(--white);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar-nav .nav-link {
+                margin: 0.2rem 0;
+            }
+        }
     </style>
+    
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <!-- Header avec navigation -->
     <header>
-        <a href="{% url 'home' %}" class="logo-btn" style="text-decoration: none; color: inherit;">
-            <span style="color:darkblue;">Mentor</span><span style="color:lightblue;">link</span>
-        </a>
-        
-        <form action="{% url 'search' %}" method="get" style="display: inline-flex; margin: 0 0.5em;">
-            <input type="search" name="q" placeholder="Rechercher un métier ou une description..." 
-                style="padding: 0.3em; border-radius: 5px; border: 1px solid #ccc; width: 200px;">
-            <button type="submit" style="margin-left: 0.5em; padding: 0.3em 0.6em; background: #f0f0f0; border: 1px solid #ccc; border-radius: 5px;">
-                OK
-            </button>
-        </form>
-    
-        {% if request.user.is_authenticated %}
-            <nav>
-                <a href="{% url 'depose_annonce' %}" style="text-decoration: none; color: inherit;">
-                        Déposer une annonce
-                </a>
-                <a href="{% url 'mes_annonces' %}" style="text-decoration: none; color: inherit;">
-                    Mes annonces
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <!-- Logo -->
+                <a class="navbar-brand" href="/">
+                    <img src="{% static 'logo.png' %}" alt="Logo du projet">
                 </a>
                 
+                <!-- Bouton pour mobile -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
                 
-            
-                
-                <a href="{% url 'profil' %}" style="text-decoration: none; color: inherit;">
-                    Profil
-                </a>
-                
-                <form action="{% url 'logout' %}" method="post" style="text-decoration: none; color: inherit;">
-                    {% csrf_token %}
-                    <button type="submit">Déconnexion</button>
-                </form>
-
-                <a class="nav-link position-relative" href="{% url 'all_messages' %}" id="messages-btn">
-                    <i class="fas fa-envelope"></i> Messages
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
-                            id="unread-count" style="display: none;">
-                        0
-                    </span>
-                </a>
-            
-            </nav>
-        {% else %}
-            <nav>
-                <a href="{% url 'login' %}" style="text-decoration: none; color: inherit;">
-                    log in
-                </a>
-                <a href="{% url 'signup' %}" style="text-decoration: none; color: inherit;">
-                    sign up
-                </a>
-        
-            </nav>
-        {% endif %}
+                <!-- Menu de navigation -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="depose_annonce">Déposer une annonce</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="mes_annonces">Mes annonces</a>
+                        </li>
+                    </ul>
+                    
+                    <!-- Menu utilisateur -->
+                    <ul class="navbar-nav">
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="profil">Profil</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="messages">Messages</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="deconnexion">Déconnexion</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="login">log in</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="signup">sign up</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
     </header>
-    
-    <main>
+
+    <!-- Contenu principal -->
+    <main class="container mt-4">
+        <!-- Messages d'alerte -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <!-- Contenu de la page -->
         {% block content %}
         {% endblock %}
     </main>
-    
-    <footer>
-        <div class="footer-legal">
-            <h3>Informations légales</h3>
-            <ul>
-                <li><a href="#">Conditions générales d'utilisation</a></li>
-                <li><a href="#">Référencement et classement des annonces</a></li>
-                <li><a href="#">Vie privée / cookies</a></li>
-                <li><a href="#">Vos droits et obligations</a></li>
-                <li><a href="#">Avis utilisateurs</a></li>
-                <li><a href="#">Charte de bonne conduite</a></li>
-                <li><a href="#">Accessibilité</a></li>
-            </ul>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>MentorLink</h5>
+                    <p>Plateforme de mentorat moderne qui connecte les talents avec des mentors expérimentés.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Liens utiles</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/" class="text-white-50">Accueil</a></li>
+                        <li><a href="about" class="text-white-50">À propos</a></li>
+                        <li><a href="services" class="text-white-50">Services</a></li>
+                        <li><a href="contact" class="text-white-50">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact</h5>
+                    <p class="text-white-50">
+                        Email: contact@mentorlink.com<br>
+                        Téléphone: +33 1 23 45 67 89
+                    </p>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="text-white-50">&copy; 2025 MentorLink. Tous droits réservés.</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <a href="privacy" class="text-white-50 me-3">Politique de confidentialité</a>
+                    <a href="terms" class="text-white-50">Conditions d'utilisation</a>
+                </div>
+            </div>
         </div>
     </footer>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- JavaScript personnalisé -->
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    
-{% if user.is_authenticated %}
-<script>
-let lastUnreadCount = 0;
-
-function updateUnreadCount() {
-    fetch('/api/unread-count/')
-        .then(response => response.json())
-        .then(data => {
-            const unreadCount = data.unread_count;
-            const badge = document.getElementById('unread-badge');
-            
-            if (unreadCount > 0) {
-                badge.textContent = unreadCount;
-                badge.style.display = 'inline-block';
-                
-                // Afficher popup si nouveau message
-                if (unreadCount > lastUnreadCount) {
-                    showUnreadPopup(unreadCount - lastUnreadCount);
-                }
-            } else {
-                badge.style.display = 'none';
-            }
-            
-            lastUnreadCount = unreadCount;
-        })
-        .catch(error => console.error('Erreur lors de la récupération du nombre de messages non lus:', error));
-}
-
-function showUnreadPopup(newMessages) {
-    // Créer le popup s'il n'existe pas
-    let popup = document.getElementById('unread-popup');
-    if (!popup) {
-        popup = document.createElement('div');
-        popup.id = 'unread-popup';
-        popup.className = 'unread-popup';
-        document.body.appendChild(popup);
-    }
-    
-    // Mettre à jour le contenu et afficher
-    popup.innerHTML = `
-        <strong>Nouveau${newMessages > 1 ? 'x' : ''} message${newMessages > 1 ? 's' : ''} !</strong><br>
-        Vous avez ${newMessages} nouveau${newMessages > 1 ? 'x' : ''} message${newMessages > 1 ? 's' : ''}
-    `;
-    popup.classList.add('show');
-    
-    // Masquer automatiquement après 5 secondes
-    setTimeout(() => {
-        popup.classList.remove('show');
-    }, 5000);
-    
-    // Permettre de fermer en cliquant
-    popup.onclick = () => {
-        popup.classList.remove('show');
-    };
-}
-
-// Vérifier les messages non lus toutes les 10 secondes
-setInterval(updateUnreadCount, 10000);
-
-// Vérifier immédiatement au chargement de la page
-document.addEventListener('DOMContentLoaded', updateUnreadCount);
-
-// Connexion WebSocket pour les notifications
-const notificationSocket = new WebSocket(
-    'ws://' + window.location.host + '/ws/notifications/'
-);
-
-notificationSocket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
-    if (data.type === 'unread_count_update') {
-        const badge = document.getElementById('unread-badge');
-        const unreadCount = data.unread_count;
-        
-        if (unreadCount > 0) {
-            badge.textContent = unreadCount;
-            badge.style.display = 'inline-block';
-            
-            // Afficher popup
-            if (unreadCount > lastUnreadCount) {
-                showUnreadPopup(unreadCount - lastUnreadCount);
-            }
-        } else {
-            badge.style.display = 'none';
-        }
-        
-        lastUnreadCount = unreadCount;
-    }
-};
-
-</script>
-{% endif %}
