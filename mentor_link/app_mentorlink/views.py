@@ -1,58 +1,21 @@
-from django.shortcuts import render, redirect
-from .models import Utilisateur, Annonce, Room
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Utilisateur, Annonce, Room, Message, MessageReadStatus
 from django.contrib.auth.decorators import login_required
 from .forms import *
 from django.contrib.auth import authenticate, login
-from django.db.models import Q
+from django.db.models import Q, Max, Count, Case, When, IntegerField
 from django.contrib.auth.forms import AuthenticationForm
-from django.shortcuts import render
-from django.http import JsonResponse
-from .models import Message
+from django.http import JsonResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseForbidden, HttpResponseBadRequest
 from django.contrib.auth.models import User
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
 from django.conf import settings
-from django.core.paginator import Paginator
+from django.utils import timezone
+
 
 def home(request):
-    personnes = Utilisateur.objects.all()
-    annonces = Annonce.objects.all().order_by('-id')  # Tri par ID décroissant (plus récentes en premier)
-    
-    # Pagination
-    paginator = Paginator(annonces, 12)  # 12 annonces par page (3x4 sur desktop)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    
-    context = {
-        'personnes': personnes, 
-        'annonces': page_obj,  # Remplace annonces par page_obj
-        'page_obj': page_obj   # Ajout pour la navigation
-    }
+    personnes = Utilisateur.objects.all()  # Récupère toutes les personnes
+    annonces = Annonce.objects.all()  # Récupère toutes les annonces
+    context = {'personnes': personnes, 'annonces': annonces}
     return render(request, 'home.html', context)
-
-def search(request):
-    query = request.GET.get('q', '')
-    results = []
-    
-    if query:
-        # Recherche dans les champs metier et description
-        results = Annonce.objects.filter(
-            Q(metier__icontains=query) | 
-            Q(description__icontains=query)
-        ).order_by('-id')
-    
-    # Pagination pour les résultats de recherche
-    paginator = Paginator(results, 12)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    
-    context = {
-        'query': query,
-        'results': page_obj,  # Remplace results par page_obj
-        'page_obj': page_obj
-    }
-    
-    return render(request, 'search.html', context)
 
 @login_required
 def depose_annonce(request):
@@ -78,6 +41,24 @@ def depose_annonce(request):
 @login_required
 def confirmation(request):
     return render(request, 'confirmation.html')
+
+def search(request):
+    query = request.GET.get('q', '')
+    results = []
+    
+    if query:
+        # Recherche dans les champs metier et description
+        results = Annonce.objects.filter(
+            Q(metier__icontains=query) | 
+            Q(description__icontains=query)
+        )
+    
+    context = {
+        'query': query,
+        'results': results
+    }
+    
+    return render(request, 'search.html', context)
 
 @login_required
 def profil(request):
@@ -107,6 +88,7 @@ def signup(request):
         form = UtilisateurForm()
 
     return render(request, 'signup.html', {'form': form})
+
 
 def loginperso(request):
     if request.method == 'POST':
@@ -151,19 +133,15 @@ def annonces_utilisateur(request, user_id=None):
     # Récupérer toutes les annonces de l'utilisateur
     annonces = Annonce.objects.filter(id_personnes=utilisateur).order_by('-id')
     
-    # Pagination pour les annonces utilisateur
-    paginator = Paginator(annonces, 8)  # 8 annonces par page
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    
     context = {
         'utilisateur': utilisateur,
-        'annonces': page_obj,
-        'page_obj': page_obj,
+        'annonces': annonces,
         'titre': titre,
     }
     
     return render(request, 'annonces_utilisateur.html', context)
+
+
 
 def annonce_detail(request, annonce_id):
     """
@@ -179,6 +157,7 @@ def annonce_detail(request, annonce_id):
     }
     
     return render(request, 'annonce_detail.html', context)
+
 
 @login_required
 def modifier_annonce(request, annonce_id):
@@ -230,27 +209,243 @@ def supprimer_annonce(request, annonce_id):
     return render(request, 'confirmer_suppression.html', context)
 
 @login_required
-def room(request, slug):
-    print(f"Room view called with slug: {slug}")
-    room = get_object_or_404(Room, slug=slug)
-    return render(request, 'room.html', {'room': room})
-
-@login_required
 def start_private_chat(request, annonce_id):
     annonce = get_object_or_404(Annonce, id=annonce_id)
     user = request.user
-    author = annonce.id_personnes  # ForeignKey to Utilisateur
+    author = annonce.id_personnes
 
-    # Check if a room exists between the two users
+    # Vérifier si une room existe entre les deux utilisateurs
     room = Room.objects.filter(users=user).filter(users=author).first()
+
     if not room:
-        # Create a room for the two users
+        # Créer une room pour les deux utilisateurs
         room_name = f"Chat: {user.username} - {author.username}"
-        room_slug = f"room-{min(user.id, author.id)}-{max(user.id, author.id)}"  # Changed to "room-"
-        room = Room.objects.create(name=room_name, slug=room_slug)
+        room_slug = f"room-{min(user.id, author.id)}-{max(user.id, author.id)}"
+        
+        # ✅ Inclure last_activity lors de la création
+        room = Room.objects.create(
+            name=room_name, 
+            slug=room_slug,
+            last_activity=timezone.now()  # Ajouter cette ligne
+        )
         room.users.add(user, author)
 
     return JsonResponse({'room_slug': room.slug})
 
 def my_messages(request):
     return render(request, 'my_messages.html')
+
+def custom_404(request, exception):
+    """Vue personnalisée pour l'erreur 404"""
+    return HttpResponseNotFound(render(request, '404.html'))
+
+def custom_500(request):
+    """Vue personnalisée pour l'erreur 500"""
+    return HttpResponseServerError(render(request, '500.html'))
+
+def custom_403(request, exception):
+    """Vue personnalisée pour l'erreur 403"""
+    return HttpResponseForbidden(render(request, '403.html'))
+
+def custom_400(request, exception):
+    """Vue personnalisée pour l'erreur 400"""
+    return HttpResponseBadRequest(render(request, '400.html'))
+
+def test_errors(request):
+    """Vue pour tester les pages d'erreur - À supprimer en production"""
+    error_type = request.GET.get('type', '404')
+    
+    if error_type == '404':
+        from django.http import Http404
+        raise Http404("Page de test 404")
+    elif error_type == '500':
+        raise Exception("Erreur de test 500")
+    elif error_type == '403':
+        from django.core.exceptions import PermissionDenied
+        raise PermissionDenied("Test erreur 403")
+    elif error_type == '400':
+        from django.core.exceptions import BadRequest
+        raise BadRequest("Test erreur 400")
+    
+    return render(request, 'home.html')
+
+
+@login_required
+def get_conversations_api(request):
+    """API pour récupérer les conversations - version simplifiée"""
+    user = request.user
+    
+    # Récupérer les rooms où l'utilisateur participe
+    user_rooms = Room.objects.filter(users=user).order_by('-id')
+    
+    conversations = []
+    for room in user_rooms:
+        # Trouver l'autre utilisateur dans la conversation
+        other_user = room.users.exclude(id=user.id).first()
+        if not other_user:
+            continue
+            
+        conversations.append({
+            'id': room.id,
+            'slug': room.slug,
+            'participant_name': f"{other_user.first_name} {other_user.last_name}",
+            'participant_username': other_user.username,
+        })
+    
+    return JsonResponse({
+        'conversations': conversations,
+    })
+
+
+@login_required
+def all_messages(request):
+    """Affiche toutes les conversations de l'utilisateur connecté avec les derniers messages"""
+    user = request.user
+    
+    # Récupérer toutes les rooms avec annotations
+    user_rooms = Room.objects.filter(users=user).annotate(
+        last_message_time=Max('messages__timestamp'),
+        total_messages=Count('messages')
+    ).order_by('-last_message_time')
+    
+    conversations = []
+    for room in user_rooms:
+        other_user = room.get_other_user(user)
+        if other_user:
+            # Récupérer le dernier message
+            last_message = room.messages.order_by('-timestamp').first()
+            
+            # Compter les messages non lus
+            unread_count = Message.objects.filter(
+                room=room
+            ).exclude(
+                user=user
+            ).exclude(
+                id__in=MessageReadStatus.objects.filter(user=user).values_list('message_id', flat=True)
+            ).count()
+            
+            conversations.append({
+                'room': room,
+                'other_user': other_user,
+                'last_message': last_message,
+                'last_message_time': last_message.timestamp if last_message else None,
+                'unread_count': unread_count,
+            })
+    
+    return render(request, 'all_messages.html', {
+        'conversations': conversations,
+        'user': user
+    })
+
+
+@login_required
+def get_unread_count(request):
+    """API pour récupérer le nombre de messages non lus"""
+    user = request.user
+    
+    # Compter les messages non lus pour cet utilisateur
+    unread_count = Message.objects.filter(
+        room__users=user  # Messages dans les rooms où l'utilisateur participe
+    ).exclude(
+        user=user  # Exclure les messages envoyés par l'utilisateur lui-même
+    ).exclude(
+        id__in=MessageReadStatus.objects.filter(user=user).values_list('message_id', flat=True)
+    ).count()
+    
+    return JsonResponse({'unread_count': unread_count})
+
+
+@login_required
+def get_conversations_api(request):
+    """API pour récupérer les conversations avec le dernier message"""
+    user = request.user
+
+    user_rooms = Room.objects.filter(users=user).annotate(
+        last_message_time=Max('messages__timestamp'),
+        total_messages=Count('messages')
+    ).order_by('-last_message_time')
+
+    conversations = []
+    total_unread = 0
+
+    for room in user_rooms:
+        other_user = room.get_other_user(user)
+        if not other_user:
+            continue
+
+        last_message = room.messages.order_by('-timestamp').first()
+        
+        # Compter les messages non lus
+        unread_count = Message.objects.filter(
+            room=room
+        ).exclude(
+            user=user
+        ).exclude(
+            id__in=MessageReadStatus.objects.filter(user=user).values_list('message_id', flat=True)
+        ).count()
+
+        total_unread += unread_count
+
+        conversations.append({
+            'id': room.id,
+            'slug': room.slug,
+            'participant_name': f"{other_user.first_name} {other_user.last_name}",
+            'participant_username': other_user.username,
+            'last_message': last_message.content[:50] + '...' if last_message and len(last_message.content) > 50 else (last_message.content if last_message else 'Aucun message'),
+            'last_message_from_current_user': last_message.user == user if last_message else False,
+            'timestamp': last_message.timestamp.strftime('%d/%m %H:%M') if last_message else '',
+            'unread_count': unread_count,
+            'total_messages': room.total_messages,
+        })
+
+    return JsonResponse({
+        'conversations': conversations,
+        'total_unread': total_unread
+    })
+
+
+
+@login_required
+def mark_messages_as_read(request, room_slug):
+    """Marquer tous les messages d'une conversation comme lus"""
+    if request.method == 'POST':
+        room = get_object_or_404(Room, slug=room_slug, users=request.user)
+
+        # Récupérer tous les messages de la room qui ne sont pas de l'utilisateur actuel
+        messages_to_mark = Message.objects.filter(
+            room=room
+        ).exclude(user=request.user)
+
+        # Marquer comme lus
+        for message in messages_to_mark:
+            MessageReadStatus.objects.get_or_create(
+                message=message,
+                user=request.user
+            )
+
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error'}, status=400)
+
+@login_required
+def room(request, slug):
+    """Vue pour afficher une conversation spécifique"""
+    room = get_object_or_404(Room, slug=slug, users=request.user)
+
+    # Marquer tous les messages de cette conversation comme lus
+    messages_to_mark = Message.objects.filter(
+        room=room
+    ).exclude(user=request.user)
+
+    for message in messages_to_mark:
+        MessageReadStatus.objects.get_or_create(
+            message=message,
+            user=request.user
+        )
+
+    # Récupérer les messages de la conversation
+    messages = Message.objects.filter(room=room).order_by('timestamp')
+
+    return render(request, 'room.html', {
+        'room': room,
+        'messages': messages
+    })
