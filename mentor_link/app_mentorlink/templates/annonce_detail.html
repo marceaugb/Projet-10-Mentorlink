@@ -50,12 +50,9 @@
                         <a href="{% url 'home' %}" class="btn btn-secondary">Retour aux annonces</a>
                         
 
-                        <button hx-get="{% url 'start_private_chat' annonce.id %}" 
-                                hx-target="this" 
-                                hx-swap="outerHTML"
-                                class="btn btn-primary">
+                        <a href="{% url 'start_private_chat' annonce.id %}" class="btn btn-primary">
                             Contacter le vendeur
-                        </button>
+                        </a>
                         <script>
                             document.addEventListener('htmx:afterRequest', function(evt) {
                                 if (evt.detail.requestConfig.verb === 'get' && evt.detail.target.tagName === 'BUTTON') {
