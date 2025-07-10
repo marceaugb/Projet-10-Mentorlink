@@ -90,7 +90,6 @@ class MessageReadStatus(models.Model):
         unique_together = ['message', 'user']
 
 class Annonce(models.Model):
-    id = models.IntegerField(primary_key=True)
     prix = models.IntegerField()
     
     image = models.ImageField(upload_to='annonces/', null=True, blank=True)
