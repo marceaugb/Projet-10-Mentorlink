@@ -96,22 +96,24 @@ def loginperso(request):
         if form.is_valid():
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
-
-            user = authenticate(request, username=username, password=password)  # Vérifie les identifiants
-
+            user = authenticate(request, username=username, password=password)
             if user is not None:
-                print(f"Utilisateur {user} authentifié avec succès.")  # Debug
-                login(request, user)  # Connecte l'utilisateur
-                return redirect('home')  # Redirection après connexion réussie
+                login(request, user)
+                # Récupérer l'URL de redirection depuis le paramètre next
+                next_url = request.GET.get('next')
+                if next_url:
+                    return redirect(next_url)
+                else:
+                    return redirect('home')
             else:
-                print("Échec de l'authentification : Mot de passe incorrect.")  # Debug
+                print("Échec de l'authentification : Mot de passe incorrect.")
         else:
-            print("Échec de l'authentification : Formulaire non valide.")  # Debug
-
+            print("Échec de l'authentification : Formulaire non valide.")
     else:
         form = AuthenticationForm()
-
+    
     return render(request, 'login.html', {'form': form})
+
 
 def annonces_utilisateur(request, user_id=None):
     """
@@ -208,29 +210,33 @@ def supprimer_annonce(request, annonce_id):
     
     return render(request, 'confirmer_suppression.html', context)
 
-@login_required
+
+@login_required(login_url='/login/')
 def start_private_chat(request, annonce_id):
     annonce = get_object_or_404(Annonce, id=annonce_id)
     user = request.user
     author = annonce.id_personnes
-
+    
+    # Empêcher un utilisateur de se contacter lui-même
+    if user == author:
+        return redirect('annonce_detail', annonce_id=annonce_id)
+    
     # Vérifier si une room existe entre les deux utilisateurs
     room = Room.objects.filter(users=user).filter(users=author).first()
-
+    
     if not room:
         # Créer une room pour les deux utilisateurs
         room_name = f"Chat: {user.username} - {author.username}"
         room_slug = f"room-{min(user.id, author.id)}-{max(user.id, author.id)}"
-        
-        # ✅ Inclure last_activity lors de la création
         room = Room.objects.create(
-            name=room_name, 
+            name=room_name,
             slug=room_slug,
-            last_activity=timezone.now()  # Ajouter cette ligne
+            last_activity=timezone.now()
         )
         room.users.add(user, author)
-
-    return JsonResponse({'room_slug': room.slug})
+    
+    # Rediriger vers la room de chat
+    return redirect('room', slug=room.slug)
 
 def my_messages(request):
     return render(request, 'my_messages.html')
