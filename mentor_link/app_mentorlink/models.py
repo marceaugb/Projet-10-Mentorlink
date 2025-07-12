@@ -12,7 +12,7 @@ def validate_birthdate(value):
     age = today.year - value.year - ((today.month, today.day) < (value.month, value.day))
     if age < 18:
         raise ValidationError("Vous devez avoir au moins 18 ans.")
-    
+
 class Utilisateur(AbstractUser):
     GENRE_CHOICES = [
         ('Homme', 'Homme'),
@@ -51,18 +51,16 @@ class Room(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     users = models.ManyToManyField('Utilisateur', related_name='rooms')
-    created_at = models.DateTimeField(auto_now_add=True)
-    last_activity = models.DateTimeField(default=timezone.now)  # ✅ Valeur par défaut
-    
+    created_at = models.DateTimeField(null=True, blank=True)
+    last_activity = models.DateTimeField(default=timezone.now)
+
     def get_other_user(self, current_user):
-        """Retourne l'autre utilisateur de la conversation"""
         return self.users.exclude(id=current_user.id).first()
-    
+
     def get_last_activity(self):
-        """Retourne le timestamp du dernier message"""
         last_message = self.messages.order_by('-timestamp').first()
         return last_message.timestamp if last_message else self.created_at
-    
+
     @property
     def last_activity_computed(self):
         return self.get_last_activity()
@@ -91,13 +89,13 @@ class MessageReadStatus(models.Model):
 
 class Annonce(models.Model):
     prix = models.IntegerField()
-    
+
     image = models.ImageField(upload_to='annonces/', null=True, blank=True)
-    
+
     metier = models.CharField(max_length=1000)
     adresse = models.TextField()
     description = models.TextField(max_length=100000, null=True, blank=True)
     id_personnes = models.ForeignKey('Utilisateur', on_delete=models.CASCADE, null=True, blank=True)
-   
+
     def __str__(self):
         return (f"Métier= {self.metier}, Prix= {self.prix}, Adresse= {self.adresse}")
