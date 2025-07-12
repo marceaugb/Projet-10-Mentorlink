@@ -1,17 +1,17 @@
-version: "3.9"
-
 services:
   db:
-    image: postgres:16
+    image: postgres:17
     restart: always
     environment:
-      POSTGRES_DB: mentor_link
-      POSTGRES_USER: mentor_user
-      POSTGRES_PASSWORD: mentor_pass
+      POSTGRES_DB: mydb
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
+    networks:
+      - backend
 
   web:
     build: .
@@ -26,20 +26,28 @@ services:
       - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
       - MEDIA_URL=/media/
       - STATIC_URL=/static/
-      - DATABASE_URL=postgres://mentor_user:mentor_pass@db:5432/mentor_link
-    depends_on:
-      - db
+      - DATABASE_NAME=mydb
+      - DATABASE_USER=myuser
+      - DATABASE_PASSWORD=mypassword
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
     ports:
       - "8000:8000"
     command: >
-      sh -c "
-        python mentor_link/manage.py collectstatic --noinput &&
-        python mentor_link/manage.py migrate &&
-        daphne -b 0.0.0.0 -p 8000 main.asgi:application
-      "
-
+      sh -c "cd /app/mentor_link &&
+             python manage.py collectstatic --noinput &&
+             python manage.py makemigrations &&
+             python manage.py migrate &&
+             daphne -b 0.0.0.0 -p 8000 main.asgi:application"
+    depends_on:
+      - db
+    networks:
+      - backend
 
 volumes:
-  pgdata:
   static_volume:
   media_volume:
+  postgres_data:
+
+networks:
+  backend:
