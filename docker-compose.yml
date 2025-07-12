@@ -35,7 +35,7 @@ services:
       sh -c "
         python mentor_link/manage.py collectstatic --noinput &&
         python mentor_link/manage.py migrate &&
-        daphne -b 0.0.0.0 -p 8000 mentor_link.asgi:application
+        daphne -b 0.0.0.0 -p 8000 main.asgi:application
       "
 
 
