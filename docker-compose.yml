@@ -13,30 +13,31 @@ services:
     ports:
       - "5432:5432"
 
-  web:
-    build: .
-    restart: always
-    volumes:
-      - .:/app
-      - static_volume:/app/static
-      - media_volume:/app/media
-    environment:
-      - DEBUG=0
-      - SECRET_KEY=change_this_to_a_secure_random_string
-      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
-      - MEDIA_URL=/media/
-      - STATIC_URL=/static/
-      - DATABASE_URL=postgres://mentor_user:mentor_pass@db:5432/mentor_link
-    depends_on:
-      - db
-    ports:
-      - "8000:8000"
-    command: >
-      sh -c "
-        python manage.py collectstatic --noinput &&
-        python manage.py migrate &&
-        daphne -b 0.0.0.0 -p 8000 main.asgi:application
-      "
+web:
+  build: .
+  restart: always
+  volumes:
+    - .:/app
+    - static_volume:/app/static
+    - media_volume:/app/media
+  environment:
+    - DEBUG=0
+    - SECRET_KEY=change_this_to_a_secure_random_string
+    - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+    - MEDIA_URL=/media/
+    - STATIC_URL=/static/
+    - DATABASE_URL=postgres://mentor_user:mentor_pass@db:5432/mentor_link
+  depends_on:
+    - db
+  ports:
+    - "8000:8000"
+  working_dir: /app
+  command: >
+    sh -c "
+    python mentor_link/manage.py collectstatic --noinput &&
+    python mentor_link/manage.py migrate &&
+    daphne -b 0.0.0.0 -p 8000 mentor_link.asgi:application
+    "
 
 volumes:
   pgdata:
