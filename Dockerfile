@@ -12,7 +12,6 @@ WORKDIR /app
 # Installer les dépendances système requises
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
-    sqlite3 \
     libjpeg-dev \
     libpng-dev \
     && apt-get clean \
@@ -25,7 +24,8 @@ RUN pip install --upgrade pip
 COPY requirements.txt /app/
 
 # Installer les dépendances
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt && \
+    pip install daphne
 
 # Copier le reste du projet
 COPY . /app/
@@ -37,4 +37,4 @@ RUN mkdir -p /app/media /app/static /app/db
 EXPOSE 8080
 
 # Commande pour démarrer l'application
-CMD ["daphne", "-b", "0.0.0.0", "-p", "8080", "mentor_link.main.asgi:application"]
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8080", "main.asgi:application"]

@@ -47,13 +47,13 @@ python manage.py migrate
 ```bash
 python manage.py runserver # il faut être dans le répertoire qui contient le fichier manage.py
 ```
-Le projet sera accessible sur `http://127.0.0.1:8000/`.
+Le projet sera accessible sur `http://127.0.0.1:8080/`.
 
 ### Déposer une annonce
 ```
-Il faut devenir administrateur. Pour ce faire, il faut aller sur : http://127.0.0.1:8000/admin et se connecter en tant qu'administrateur.
-  Identifiant : root  
-  Mot de passe : root  
+Il faut être connecté. Pour ce faire, il faut aller sur : http://127.0.0.1:8080/login et se connecter. Ex
+  Identifiant : aaaa  
+  Mot de passe : aaaaqqqq  
 
 Il ne reste plus qu'à revenir sur le menu principal et à cliquer sur "Déposer une annonce".
 ```
