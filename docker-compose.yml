@@ -32,13 +32,13 @@ services:
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
     ports:
-      - "8000:8000"
+      - "8080:8080"
     command: >
       sh -c "cd /app/mentor_link &&
              python manage.py collectstatic --noinput &&
              python manage.py makemigrations &&
              python manage.py migrate &&
-             daphne -b 0.0.0.0 -p 8000 main.asgi:application"
+             daphne -b 0.0.0.0 -p 8080 main.asgi:application"
     depends_on:
       - db
     networks:
