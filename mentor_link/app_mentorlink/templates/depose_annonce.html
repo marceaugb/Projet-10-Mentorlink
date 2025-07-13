@@ -10,10 +10,9 @@
 
     <!-- Champ Prix (supposé être un champ texte ou nombre) -->
     <div>
-        {{ form.prix.label_tag }}
-        {{ form.prix }}
-        {% if form.prix.errors %}
-            <div class="error">{{ form.prix.errors }}</div>
+        <input type="id_prix" name="prix" id="id_prix" maxlength="20" step="any" min="0" />{% if form.prix.errors %}
+        <div class="error">
+        {{ form.prix.errors }}</div>
         {% endif %}
         <div id="compteur_prix">0 / 20 caractères</div>
     </div>
