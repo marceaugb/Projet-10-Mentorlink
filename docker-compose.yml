@@ -6,6 +6,12 @@ services:
       POSTGRES_DB: mydb
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypassword
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d mydb -U myuser"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -37,14 +43,27 @@ services:
              python manage.py makemigrations &&
              python manage.py migrate &&
              daphne -b 0.0.0.0 -p 8080 main.asgi:application"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - backend
 
   nginx:
     image: nginx:alpine
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     ports:
       - "80:80"
     volumes:
@@ -52,7 +71,8 @@ services:
       - static_volume:/var/www/static
       - media_volume:/var/www/media
     depends_on:
-      - web
+      web:
+        condition: service_healthy
     networks:
       - backend
 
