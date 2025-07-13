@@ -34,7 +34,7 @@ COPY . /app/
 RUN mkdir -p /app/media /app/static /app/db
 
 # Exposer le port sur lequel Django va s'exécuter
-EXPOSE 8000
+EXPOSE 8080
 
 # Commande pour démarrer l'application
-CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "mentor_link.main.asgi:application"]
+CMD ["daphne", "-b", "0.0.0.0", "-p", "8080", "mentor_link.main.asgi:application"]
