@@ -6,7 +6,7 @@ MIN_REPLICAS = 1
 MAX_REPLICAS = 5
 SCALE_UP_THRESHOLD = 40.0  # % CPU
 SCALE_DOWN_THRESHOLD = 10.0  # % CPU
-CHECK_INTERVAL = 30  # seconds
+CHECK_INTERVAL = 20  # seconds
 
 def get_web_containers():
     result = subprocess.run(
@@ -33,8 +33,13 @@ def get_current_replicas():
 def scale_to(n):
     print(f"Scaling {SERVICE_NAME} to {n} replicas...")
     subprocess.run(
-    ["docker", "compose", "up", "-d", "--scale", f"{SERVICE_NAME}={n}"]
+        ["docker", "compose", "up", "-d", "--scale", f"{SERVICE_NAME}={n}"]
     )
+    print("Restarting nginx to update backend list...")
+    subprocess.run(
+        ["docker", "compose", "restart", "nginx"]
+    )
+
 
 def main():
     while True:
