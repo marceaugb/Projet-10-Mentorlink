@@ -33,7 +33,7 @@ def get_current_replicas():
 def scale_to(n):
     print(f"Scaling {SERVICE_NAME} to {n} replicas...")
     subprocess.run(
-        ["docker-compose", "up", "-d", f"--scale", f"{SERVICE_NAME}={n}"]
+    ["docker", "compose", "up", "-d", "--scale", f"{SERVICE_NAME}={n}"]
     )
 
 def main():
