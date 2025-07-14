@@ -10,6 +10,9 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.utils import timezone
 
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+
 
 def home(request):
     personnes = Utilisateur.objects.all()  # Récupère toutes les personnes
@@ -455,3 +458,7 @@ def room(request, slug):
         'room': room,
         'messages': messages
     })
+
+@csrf_exempt
+def health(request):
+    return HttpResponse("ok", status=200)

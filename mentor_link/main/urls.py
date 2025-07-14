@@ -28,6 +28,7 @@ urlpatterns = [
     path('api/unread-count/', views.get_unread_count, name='unread_count'),
     # Ajoutez SEULEMENT cette ligne pour les messages :
     path('messages/', views.all_messages, name='all_messages'),
+    path('health/', views.health, name='health'),
     
     # Gardez votre room original à la fin :
     path('<slug:slug>/', views.room, name='room'),
