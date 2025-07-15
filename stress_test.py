@@ -1,28 +1,3 @@
-#!/usr/bin/env python3
-"""
-Testeur de charge pour valider l'autoscaling Django
-Créé pour tester notre setup Docker avec NGINX qui redémarre tout le temps...
-
-Usage rapide:
-    python stress_test.py
-
-Ce que ça fait:
-    - Détecte quand NGINX plante (502/504, connexions qui tombent)
-    - Met en pause automatiquement et reprend quand c'est bon
-    - Affiche les stats importantes en temps réel
-    - Monte la charge progressivement comme on veut
-    - Marche bien avec asyncio (testé en prod)
-
-Installation:
-    pip install aiohttp click rich
-
-Pour CI/CD:
-    Codes de retour:
-    - 0: tout s'est bien passé
-    - 1: service down trop longtemps
-    - 2: problème de config
-"""
-
 import asyncio
 import time
 import statistics
