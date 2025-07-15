@@ -5,12 +5,11 @@ from .forms import *
 from django.contrib.auth import authenticate, login
 from django.db.models import Q, Max, Count, Case, When, IntegerField
 from django.contrib.auth.forms import AuthenticationForm
-from django.http import JsonResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseForbidden, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseNotFound, HttpResponseServerError, HttpResponseForbidden, HttpResponseBadRequest, HttpResponse
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.utils import timezone
 
-from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 
@@ -119,11 +118,7 @@ def loginperso(request):
 
 
 def annonces_utilisateur(request, user_id=None):
-    """
-    Affiche toutes les annonces d'un utilisateur spécifique.
-    Si user_id n'est pas fourni, affiche les annonces de l'utilisateur connecté.
-    """
-    if user_id is None:
+   if user_id is None:
         # Si aucun ID n'est fourni, afficher les annonces de l'utilisateur connecté
         utilisateur = request.user
         titre = "Mes annonces"
@@ -149,9 +144,6 @@ def annonces_utilisateur(request, user_id=None):
 
 
 def annonce_detail(request, annonce_id):
-    """
-    Affiche le détail d'une annonce spécifique.
-    """
     try:
         annonce = Annonce.objects.get(id=annonce_id)
     except Annonce.DoesNotExist:
@@ -166,9 +158,6 @@ def annonce_detail(request, annonce_id):
 
 @login_required
 def modifier_annonce(request, annonce_id):
-    """
-    Permet à l'utilisateur de modifier son annonce.
-    """
     try:
         annonce = Annonce.objects.get(id=annonce_id, id_personnes=request.user)
     except Annonce.DoesNotExist:
@@ -192,9 +181,6 @@ def modifier_annonce(request, annonce_id):
 
 @login_required
 def supprimer_annonce(request, annonce_id):
-    """
-    Permet à l'utilisateur de supprimer son annonce.
-    """
     try:
         # Vérifier que l'annonce existe et appartient à l'utilisateur connecté
         annonce = Annonce.objects.get(id=annonce_id, id_personnes=request.user)
