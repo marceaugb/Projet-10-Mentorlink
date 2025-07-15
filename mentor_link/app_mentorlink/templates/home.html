@@ -132,15 +132,6 @@
                     {% endfor %}
                 </div>
 
-                <!-- Bouton voir plus -->
-                <div class="text-center mt-12">
-                    <a href="{% url 'search' %}" class="inline-flex items-center bg-orange-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-orange-700 transition-colors duration-200">
-                        <span>Voir tous les mentors</span>
-                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                        </svg>
-                    </a>
-                </div>
             {% else %}
                 <div class="text-center py-16">
                     <div class="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
@@ -163,32 +154,6 @@
                     {% endif %}
                 </div>
             {% endif %}
-        </div>
-    </section>
-
-    <!-- Section CTA -->
-    <section class="py-16 bg-gradient-to-r from-orange-600 to-purple-600 text-white">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-3xl md:text-4xl font-bold mb-4">
-                Prêt à accélérer votre carrière ?
-            </h2>
-            <p class="text-xl mb-8 opacity-90">
-                Rejoignez des milliers de professionnels qui transforment leur parcours grâce au mentorat.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                {% if not user.is_authenticated %}
-                    <a href="{% url 'signup' %}" class="bg-white text-orange-600 font-semibold px-8 py-3 rounded-full hover:bg-gray-100 transition-all duration-300">
-                        Créer mon compte
-                    </a>
-                {% else %}
-                    <a href="{% url 'depose_annonce' %}" class="bg-white text-orange-600 font-semibold px-8 py-3 rounded-full hover:bg-gray-100 transition-all duration-300">
-                        Publier une annonce
-                    </a>
-                {% endif %}
-                <a href="{% url 'search' %}" class="border-2 border-white text-white font-semibold px-8 py-3 rounded-full hover:bg-white hover:text-orange-600 transition-all duration-300">
-                    Explorer les mentors
-                </a>
-            </div>
         </div>
     </section>
 </div>
