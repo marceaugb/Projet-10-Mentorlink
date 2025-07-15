@@ -52,8 +52,8 @@ class UtilisateurForm(UserCreationForm):
         today = date.today()
         age = today.year - date_naissance.year - ((today.month, today.day) < (date_naissance.month, date_naissance.day))
 
-        if age < 15:
-            raise forms.ValidationError("Vous devez avoir au moins 15 ans.")
+        if age < 18:
+            raise forms.ValidationError("Vous devez avoir au moins 18 ans.")
 
         return date_naissance
 
