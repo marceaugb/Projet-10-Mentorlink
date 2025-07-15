@@ -678,15 +678,6 @@
                             {% endfor %}
                         </div>
 
-                        <!-- Bouton voir plus -->
-                        <div class="text-center mt-12 scroll-animate">
-                            <a href="{% url 'search' %}" class="btn btn-primary px-8 py-4">
-                                Voir tous les mentors
-                                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                                </svg>
-                            </a>
-                        </div>
                     {% else %}
                         <div class="text-center py-12">
                             <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -706,37 +697,6 @@
                 </div>
             </section>
 
-            <!-- Section CTA cohérente -->
-            <section class="section hero-bg text-white">
-                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-4">
-                        Prêt à accélérer votre carrière ?
-                    </h2>
-                    <p class="text-xl mb-8 text-gray-100">
-                        Rejoignez des milliers de professionnels qui ont déjà transformé leur parcours grâce au mentorat.
-                    </p>
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                        {% if not user.is_authenticated %}
-                            <a href="{% url 'signup' %}" class="btn btn-primary bg-white text-primary-600 hover:bg-gray-100">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                </svg>
-                                Créer mon compte
-                            </a>
-                        {% else %}
-                            <a href="{% url 'depose_annonce' %}" class="btn btn-primary bg-white text-primary-600 hover:bg-gray-100">
-                                Publier une annonce
-                            </a>
-                        {% endif %}
-                        <a href="{% url 'search' %}" class="btn btn-secondary border-white text-white hover:bg-white hover:text-primary-600">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
-                            Explorer les mentors
-                        </a>
-                    </div>
-                </div>
-            </section>
         {% endblock %}
     </main>
 
