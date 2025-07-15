@@ -1,325 +1,900 @@
-{% load static %}
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}MentorLink - Plateforme de Mentorat{% endblock %}</title>
+    <title>MentorLink - Trouvez votre mentor idéal</title>
+    <meta name="description" content="Plateforme de mentorat professionnel - Connectez-vous avec des mentors expérimentés">
     
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Configuration Tailwind inline -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff5f5',
+                            100: '#fed7d7',
+                            200: '#feb2b2',
+                            300: '#fc8181',
+                            400: '#f56565',
+                            500: '#ff6b6b',
+                            600: '#e53e3e',
+                            700: '#c53030',
+                            800: '#9b2c2c',
+                            900: '#742a2a'
+                        },
+                        secondary: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            200: '#99f6e4',
+                            300: '#5eead4',
+                            400: '#2dd4bf',
+                            500: '#4ecdc4',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a'
+                        }
+                    },
+                    fontFamily: {
+                        'display': ['Inter', 'system-ui', 'sans-serif'],
+                        'body': ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'float': 'float 3s ease-in-out infinite',
+                        'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                    },
+                    borderRadius: {
+                        'xl': '1rem',
+                        '2xl': '1.5rem'
+                    }
+                }
+            }
+        }
+    </script>
     
-    <!-- Font Awesome pour les icônes -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- CSS personnalisé -->
     <style>
+        /* Import Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        /* Variables CSS pour la cohérence */
         :root {
-            --primary-pink: #FF6B6B;
-            --primary-cyan: #4ECDC4;
-            --dark-gray: #2C3E50;
-            --light-gray: #F8F9FA;
-            --white: #FFFFFF;
-            --gradient: linear-gradient(135deg, var(--primary-pink) 0%, var(--primary-cyan) 100%);
+            --gradient-primary: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
+            --gradient-secondary: linear-gradient(135deg, #4ecdc4 0%, #45b7b8 100%);
+            --gradient-light: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --border-radius: 1rem;
+            --border-radius-lg: 1.5rem;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* Animations keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
-        body {
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            color: var(--dark-gray);
-            background-color: var(--white);
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* Logo ML cohérent */
+        .logo-container {
             display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            align-items: center;
+            gap: 0.75rem;
         }
         
-        /* Navigation moderne */
-        .navbar {
-            background: var(--white) !important;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            padding: 1rem 0;
-            transition: all 0.3s ease;
+        .logo-ml {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-primary);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
         }
         
-        .navbar-brand img {
-            height: 60px;
-            width: auto;
-            transition: transform 0.3s ease;
-        }
-        
-        .navbar-brand img:hover {
+        .logo-ml:hover {
             transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
         }
         
-        .navbar-nav .nav-link {
-            color: var(--dark-gray) !important;
-            font-weight: 500;
-            margin: 0 0.5rem;
-            padding: 0.5rem 1rem !important;
-            border-radius: 25px;
-            transition: all 0.3s ease;
+        .logo-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.025em;
         }
         
-        .navbar-nav .nav-link:hover {
-            background: var(--gradient);
-            color: var(--white) !important;
-            transform: translateY(-2px);
-        }
-        
-        /* Boutons avec gradient */
-        .btn-primary {
-            background: var(--gradient);
-            border: none;
-            border-radius: 25px;
-            padding: 0.75rem 2rem;
+        /* Système de boutons cohérent */
+        .btn {
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: var(--shadow-md);
         }
         
         .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.3);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
         
-        .btn-outline-primary {
-            border: 2px solid var(--primary-pink);
-            color: var(--primary-pink);
-            border-radius: 25px;
-            padding: 0.75rem 2rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
+        .btn-secondary {
+            background: white;
+            color: #ff6b6b;
+            border: 2px solid #ff6b6b;
+            box-shadow: var(--shadow-sm);
         }
         
-        .btn-outline-primary:hover {
-            background: var(--gradient);
-            border-color: transparent;
-            color: var(--white);
-            transform: translateY(-3px);
+        .btn-secondary:hover {
+            background: #ff6b6b;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
         
-        /* Cards modernes */
+        .btn-outline {
+            background: transparent;
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+        
+        .btn-outline:hover {
+            background: var(--gradient-light);
+            border-color: #ff6b6b;
+        }
+        
+        /* Navigation cohérente */
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: var(--transition);
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .nav-link:hover {
+            background: var(--gradient-light);
+            color: #ff6b6b;
+        }
+        
+        /* Barre de recherche réduite */
+        .search-container {
+            position: relative;
+            width: 100%;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.25rem 1rem 3rem;
+            border: 2px solid #e5e7eb;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+            box-shadow: var(--shadow-sm);
+            font-weight: 400;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1), var(--shadow-md);
+        }
+        
+        .search-input::placeholder {
+            color: #9ca3af;
+            font-weight: 400;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            transition: var(--transition);
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+        
+        .search-input:focus + .search-icon {
+            color: #ff6b6b;
+        }
+        
+        /* Auto-submit sur Enter */
+        .search-form {
+            width: 100%;
+        }
+        
+        /* Cards cohérentes */
         .card {
-            border: none;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            overflow: hidden;
+            background: white;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            border: 1px solid #f3f4f6;
         }
         
         .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
         }
         
-        .card-header {
-            background: var(--gradient);
-            color: var(--white);
-            border: none;
-            padding: 1.5rem;
-            font-weight: 600;
+        .card-annonce {
+            @apply card;
         }
         
-        /* Alertes personnalisées */
+        /* Hero section cohérente */
+        .hero-bg {
+            background: var(--gradient-primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+        }
+        
+        /* Messages flash cohérents */
         .alert {
-            border: none;
-            border-radius: 15px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
         }
         
-        .alert-success {
-            background: linear-gradient(135deg, rgba(78, 205, 196, 0.1) 0%, rgba(78, 205, 196, 0.2) 100%);
-            color: var(--primary-cyan);
-            border-left: 4px solid var(--primary-cyan);
-        }
-        
-        .alert-danger {
-            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(255, 107, 107, 0.2) 100%);
-            color: var(--primary-pink);
-            border-left: 4px solid var(--primary-pink);
-        }
-        
-        /* Footer moderne */
-        footer {
-            background-color: #343a40;
+        /* Badges cohérents */
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
             color: white;
-            padding: 20px 0;
-            margin-top: auto;
-        }
-        
-        footer h5 {
-            color: var(--primary-cyan);
+            font-size: 0.75rem;
             font-weight: 600;
-            margin-bottom: 1.5rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            min-width: 1.25rem;
+            height: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+            animation: pulse 2s infinite;
         }
         
-        footer a {
-            color: rgba(255,255,255,0.7);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-        
-        footer a:hover {
-            color: var(--primary-pink);
-            transform: translateX(5px);
-        }
-        
-        /* Conteneur principal */
-        main {
-            flex: 1;
-            padding: 2rem 0;
-        }
-        
-        /* Dropdown menu */
-        .dropdown-menu {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            padding: 1rem 0;
-        }
-        
-        .dropdown-item {
-            padding: 0.75rem 1.5rem;
-            transition: all 0.3s ease;
-        }
-        
-        .dropdown-item:hover {
-            background: var(--gradient);
-            color: var(--white);
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .navbar-nav .nav-link {
-                margin: 0.2rem 0;
+        /* Responsive utilities */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
+        
+        /* Navigation mobile cohérente */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: var(--transition);
+            background: white;
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        
+        /* Scroll animations cohérentes */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+        
+        .scroll-animate.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Éléments décoratifs cohérents */
+        .decoration-element {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* Typographie cohérente */
+        .text-gradient {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Sections cohérentes */
+        .section {
+            padding: 4rem 0;
+        }
+        
+        .section-alt {
+            background: #f9fafb;
+        }
     </style>
-    
-    {% block extra_css %}{% endblock %}
 </head>
-<body>
-    <!-- Header avec navigation -->
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container">
-                <!-- Logo -->
-                <a class="navbar-brand" href="/">
-                    <img src="{% static 'logo.png' %}" alt="Logo du projet">
-                </a>
+
+<body class="font-body bg-gray-50 text-gray-900">
+    <!-- Navigation cohérente -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo ML -->
+                <div class="flex-shrink-0">
+                    <a href="{% url 'home' %}" class="logo-container hover:scale-105 transition-transform duration-200" aria-label="Retour à l'accueil">
+                        <div class="logo-ml">ML</div>
+                        <span class="logo-text">MentorLink</span>
+                    </a>
+                </div>
                 
-                <!-- Bouton pour mobile -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                <!-- Barre de recherche centrale réduite (desktop) -->
+                <div class="hidden md:flex flex-1 max-w-lg mx-8">
+                    <form action="{% url 'search' %}" method="GET" class="search-form">
+                        <div class="search-container">
+                            <input 
+                                type="text" 
+                                name="q" 
+                                placeholder="Rechercher un mentor, un métier..." 
+                                class="search-input"
+                                value="{{ request.GET.q }}"
+                                onkeypress="if(event.key==='Enter') this.form.submit()"
+                            >
+                            <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </div>
+                    </form>
+                </div>
                 
-                <!-- Menu de navigation -->
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="depose_annonce">Déposer une annonce</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="mes_annonces">Mes annonces</a>
-                        </li>
-                    </ul>
-                    
-                    <!-- Menu utilisateur -->
-                    <ul class="navbar-nav">
-                        {% if user.is_authenticated %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="profil">Profil</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="messages">Messages</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="deconnexion">Déconnexion</a>
-                            </li>
-                        {% else %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="login">log in</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="signup">sign up</a>
-                            </li>
-                        {% endif %}
-                    </ul>
+                <!-- Navigation desktop -->
+                <div class="hidden md:flex items-center space-x-4">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'depose_annonce' %}" class="nav-link">
+                            Publier
+                        </a>
+                        <a href="{% url 'mes_annonces' %}" class="nav-link">Mes annonces</a>
+                        <a href="{% url 'all_messages' %}" class="nav-link relative">
+                            Messages
+                            <span class="badge" id="unread-badge" style="display: none;">0</span>
+                        </a>
+                        <a href="{% url 'profil' %}" class="nav-link">Profil</a>
+                        <a href="{% url 'logout' %}" class="btn btn-secondary">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            </svg>
+                            Déconnexion
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline">Connexion</a>
+                        <a href="{% url 'signup' %}" class="btn btn-primary">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            Inscription
+                        </a>
+                    {% endif %}
+                </div>
+                
+                <!-- Menu mobile button -->
+                <div class="md:hidden">
+                    <button type="button" class="nav-link p-2" id="mobile-menu-button" aria-label="Ouvrir le menu">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
                 </div>
             </div>
-        </nav>
-    </header>
+            
+            <!-- Barre de recherche mobile -->
+            <div class="md:hidden pb-4">
+                <form action="{% url 'search' %}" method="GET" class="search-form">
+                    <div class="search-container">
+                        <input 
+                            type="text" 
+                            name="q" 
+                            placeholder="Rechercher un mentor..." 
+                            class="search-input"
+                            value="{{ request.GET.q }}"
+                            onkeypress="if(event.key==='Enter') this.form.submit()"
+                        >
+                        <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Menu mobile -->
+        <div class="md:hidden mobile-menu fixed inset-y-0 left-0 w-64 z-50" id="mobile-menu">
+            <div class="p-4">
+                <div class="flex justify-between items-center mb-8">
+                    <div class="logo-container">
+                        <div class="logo-ml">ML</div>
+                        <span class="logo-text text-lg">MentorLink</span>
+                    </div>
+                    <button type="button" id="close-mobile-menu" class="nav-link p-2" aria-label="Fermer le menu">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <nav class="space-y-4">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'depose_annonce' %}" class="block nav-link">
+                            Publier une annonce
+                        </a>
+                        <a href="{% url 'mes_annonces' %}" class="block nav-link">Mes annonces</a>
+                        <a href="{% url 'all_messages' %}" class="block nav-link">Messages</a>
+                        <a href="{% url 'profil' %}" class="block nav-link">Profil</a>
+                        <a href="{% url 'logout' %}" class="block w-full btn btn-secondary mt-4">Déconnexion</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="block nav-link">Connexion</a>
+                        <a href="{% url 'signup' %}" class="block w-full btn btn-primary mt-4">Inscription</a>
+                    {% endif %}
+                </nav>
+            </div>
+        </div>
+    </nav>
 
-    <!-- Contenu principal -->
-    <main class="container mt-4">
-        <!-- Messages d'alerte -->
-        {% if messages %}
+    <!-- Messages flash cohérents -->
+    {% if messages %}
+        <div class="fixed top-24 right-4 z-50 space-y-2" id="flash-messages">
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <div class="alert border-l-4 {% if message.tags == 'success' %}border-green-500 bg-green-50 text-green-700{% elif message.tags == 'error' %}border-red-500 bg-red-50 text-red-700{% elif message.tags == 'warning' %}border-yellow-500 bg-yellow-50 text-yellow-700{% else %}border-blue-500 bg-blue-50 text-blue-700{% endif %} p-4 animate-slide-up">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            {% if message.tags == 'success' %}
+                                <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            {% elif message.tags == 'error' %}
+                                <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                            {% else %}
+                                <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                            {% endif %}
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium">{{ message }}</p>
+                        </div>
+                        <button type="button" class="ml-auto pl-3" onclick="this.parentElement.parentElement.remove()">
+                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             {% endfor %}
-        {% endif %}
-        
-        <!-- Contenu de la page -->
+        </div>
+    {% endif %}
+
+    <!-- Contenu principal -->
+    <main>
         {% block content %}
+            <!-- Hero Section cohérente -->
+            <section class="hero-bg text-white section relative">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div class="text-center animate-fade-in">
+                        <h1 class="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+                            Trouvez votre 
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">mentor idéal</span>
+                        </h1>
+                        <p class="text-xl md:text-2xl mb-8 text-gray-100 max-w-3xl mx-auto leading-relaxed">
+                            Connectez-vous avec des professionnels expérimentés et accélérez votre carrière grâce à un mentorat personnalisé.
+                        </p>
+                        
+                        <!-- Barre de recherche hero réduite -->
+                        <div class="max-w-2xl mx-auto mb-8">
+                            <form action="{% url 'search' %}" method="GET" class="search-form">
+                                <div class="search-container">
+                                    <input 
+                                        type="text" 
+                                        name="q" 
+                                        placeholder="Rechercher un mentor, un métier, une compétence..." 
+                                        class="search-input text-gray-900 text-lg py-4"
+                                        value="{{ request.GET.q }}"
+                                        onkeypress="if(event.key==='Enter') this.form.submit()"
+                                    >
+                                    <svg class="search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                            {% if not user.is_authenticated %}
+                                <a href="{% url 'signup' %}" class="btn btn-primary text-lg px-8 py-4">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    </svg>
+                                    Devenir mentor
+                                </a>
+                            {% else %}
+                                <a href="{% url 'depose_annonce' %}" class="btn btn-primary text-lg px-8 py-4">
+                                    Publier une annonce
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'search' %}" class="btn btn-secondary text-lg px-8 py-4 bg-white/20 border-white/30 text-white hover:bg-white hover:text-primary-600">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                                Explorer les mentors
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Éléments décoratifs cohérents -->
+                <div class="absolute top-10 left-10 w-20 h-20 decoration-element"></div>
+                <div class="absolute bottom-10 right-10 w-32 h-32 decoration-element" style="animation-delay: 1s;"></div>
+                <div class="absolute top-1/2 left-1/4 w-16 h-16 decoration-element" style="animation-delay: 2s;"></div>
+            </section>
+
+            <!-- Section Statistiques cohérente -->
+            <section class="section bg-white">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                        <div class="scroll-animate">
+                            <div class="text-4xl font-bold text-gradient mb-2">{{ annonces.count }}+</div>
+                            <div class="text-gray-600 font-medium">Mentors disponibles</div>
+                        </div>
+                        <div class="scroll-animate" style="animation-delay: 0.2s;">
+                            <div class="text-4xl font-bold text-gradient mb-2">{{ personnes.count }}+</div>
+                            <div class="text-gray-600 font-medium">Utilisateurs actifs</div>
+                        </div>
+                        <div class="scroll-animate" style="animation-delay: 0.4s;">
+                            <div class="text-4xl font-bold text-gradient mb-2">95%</div>
+                            <div class="text-gray-600 font-medium">Taux de satisfaction</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Annonces cohérente -->
+            <section class="section section-alt">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-12 scroll-animate">
+                        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                            Nos mentors <span class="text-gradient">experts</span>
+                        </h2>
+                        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                            Découvrez des professionnels passionnés prêts à partager leur expertise et vous accompagner dans votre développement.
+                        </p>
+                    </div>
+
+                    {% if annonces %}
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {% for annonce in annonces %}
+                                <article class="card-annonce p-6 scroll-animate" style="animation-delay: {{ forloop.counter0|floatformat:1 }}s;">
+                                    <!-- Image du mentor -->
+                                    {% if annonce.image %}
+                                        <div class="w-16 h-16 mx-auto mb-4 rounded-full overflow-hidden bg-gradient-to-br from-primary-500 to-secondary-500 p-0.5">
+                                            <img src="{{ annonce.image.url }}" alt="Photo de {{ annonce.id_personnes.first_name }}" class="w-full h-full object-cover rounded-full bg-white" loading="lazy">
+                                        </div>
+                                    {% else %}
+                                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center">
+                                            <span class="text-white font-bold text-xl">{{ annonce.id_personnes.first_name|first }}{{ annonce.id_personnes.last_name|first }}</span>
+                                        </div>
+                                    {% endif %}
+
+                                    <!-- Informations du mentor -->
+                                    <div class="text-center mb-4">
+                                        <h3 class="text-xl font-semibold text-gray-900 mb-1">
+                                            {{ annonce.id_personnes.first_name }} {{ annonce.id_personnes.last_name }}
+                                        </h3>
+                                        <p class="text-gradient font-medium">{{ annonce.metier }}</p>
+                                    </div>
+
+                                    <!-- Description -->
+                                    {% if annonce.description %}
+                                        <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ annonce.description|truncatewords:20 }}</p>
+                                    {% endif %}
+
+                                    <!-- Localisation -->
+                                    <div class="flex items-center justify-center text-gray-500 text-sm mb-4">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        {{ annonce.adresse|truncatewords:3 }}
+                                    </div>
+
+                                    <!-- Prix et actions -->
+                                    <div class="flex items-center justify-between">
+                                        <div class="text-2xl font-bold text-gradient">
+                                            {{ annonce.prix }}€<span class="text-sm text-gray-500 font-normal">/h</span>
+                                        </div>
+                                        <div class="flex space-x-2">
+                                            <a href="{% url 'annonce_detail' annonce.id %}" class="btn btn-outline text-sm px-4 py-2">
+                                                Voir profil
+                                            </a>
+                                            {% if user.is_authenticated and user != annonce.id_personnes %}
+                                                <a href="{% url 'start_private_chat' annonce.id %}" class="btn btn-primary text-sm px-4 py-2">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                                    </svg>
+                                                    Contacter
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Bouton voir plus -->
+                        <div class="text-center mt-12 scroll-animate">
+                            <a href="{% url 'search' %}" class="btn btn-primary px-8 py-4">
+                                Voir tous les mentors
+                                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                </svg>
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-12">
+                            <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                            </svg>
+                            <h3 class="text-xl font-semibold text-gray-900 mb-2">Aucun mentor disponible</h3>
+                            <p class="text-gray-600 mb-6">Soyez le premier à rejoindre notre communauté de mentors !</p>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'depose_annonce' %}" class="btn btn-primary">
+                                    Devenir mentor
+                                </a>
+                            {% else %}
+                                <a href="{% url 'signup' %}" class="btn btn-primary">Rejoindre la communauté</a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </section>
+
+            <!-- Section CTA cohérente -->
+            <section class="section hero-bg text-white">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                        Prêt à accélérer votre carrière ?
+                    </h2>
+                    <p class="text-xl mb-8 text-gray-100">
+                        Rejoignez des milliers de professionnels qui ont déjà transformé leur parcours grâce au mentorat.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        {% if not user.is_authenticated %}
+                            <a href="{% url 'signup' %}" class="btn btn-primary bg-white text-primary-600 hover:bg-gray-100">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                                Créer mon compte
+                            </a>
+                        {% else %}
+                            <a href="{% url 'depose_annonce' %}" class="btn btn-primary bg-white text-primary-600 hover:bg-gray-100">
+                                Publier une annonce
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'search' %}" class="btn btn-secondary border-white text-white hover:bg-white hover:text-primary-600">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            Explorer les mentors
+                        </a>
+                    </div>
+                </div>
+            </section>
         {% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>MentorLink</h5>
-                    <p>Plateforme de mentorat moderne qui connecte les talents avec des mentors expérimentés.</p>
+    <!-- Footer cohérent -->
+    <footer class="bg-gray-900 text-white section">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Logo et description -->
+                <div class="md:col-span-2">
+                    <div class="logo-container mb-4">
+                        <div class="logo-ml">ML</div>
+                        <span class="logo-text text-white">MentorLink</span>
+                    </div>
+                    <p class="text-gray-400 mb-6 max-w-md">
+                        La plateforme de référence pour connecter mentors et mentorés. Développez vos compétences et accélérez votre carrière.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" aria-label="LinkedIn">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" aria-label="Twitter">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors duration-200" aria-label="Facebook">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                        </a>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <h5>Liens utiles</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="/" class="text-white-50">Accueil</a></li>
-                        <li><a href="about" class="text-white-50">À propos</a></li>
-                        <li><a href="services" class="text-white-50">Services</a></li>
-                        <li><a href="contact" class="text-white-50">Contact</a></li>
+                
+                <!-- Liens rapides -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Liens rapides</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{% url 'search' %}" class="text-gray-400 hover:text-white transition-colors duration-200">Rechercher</a></li>
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'depose_annonce' %}" class="text-gray-400 hover:text-white transition-colors duration-200">Publier</a></li>
+                            <li><a href="{% url 'profil' %}" class="text-gray-400 hover:text-white transition-colors duration-200">Mon profil</a></li>
+                        {% else %}
+                            <li><a href="{% url 'signup' %}" class="text-gray-400 hover:text-white transition-colors duration-200">Inscription</a></li>
+                            <li><a href="{% url 'login' %}" class="text-gray-400 hover:text-white transition-colors duration-200">Connexion</a></li>
+                        {% endif %}
                     </ul>
                 </div>
-                <div class="col-md-4">
-                    <h5>Contact</h5>
-                    <p class="text-white-50">
-                        Email: contact@mentorlink.com<br>
-                        Téléphone: +33 1 23 45 67 89
-                    </p>
+                
+                <!-- Support -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Support</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Centre d'aide</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Conditions d'utilisation</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Politique de confidentialité</a></li>
+                    </ul>
                 </div>
             </div>
-            <hr class="my-4">
-            <div class="row">
-                <div class="col-md-6">
-                    <p class="text-white-50">&copy; 2025 MentorLink. Tous droits réservés.</p>
-                </div>
-                <div class="col-md-6 text-end">
-                    <a href="privacy" class="text-white-50 me-3">Politique de confidentialité</a>
-                    <a href="terms" class="text-white-50">Conditions d'utilisation</a>
-                </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 MentorLink. Tous droits réservés.</p>
             </div>
         </div>
     </footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- JavaScript personnalisé -->
-    {% block extra_js %}{% endblock %}
+    <!-- Scripts -->
+    <script>
+        // Menu mobile
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const closeMobileMenu = document.getElementById('close-mobile-menu');
+
+        mobileMenuButton?.addEventListener('click', () => {
+            mobileMenu.classList.add('open');
+        });
+
+        closeMobileMenu?.addEventListener('click', () => {
+            mobileMenu.classList.remove('open');
+        });
+
+        // Fermer le menu mobile en cliquant à l'extérieur
+        document.addEventListener('click', (e) => {
+            if (!mobileMenu.contains(e.target) && !mobileMenuButton.contains(e.target)) {
+                mobileMenu.classList.remove('open');
+            }
+        });
+
+        // Auto-hide flash messages
+        setTimeout(() => {
+            const flashMessages = document.getElementById('flash-messages');
+            if (flashMessages) {
+                flashMessages.style.opacity = '0';
+                setTimeout(() => flashMessages.remove(), 300);
+            }
+        }, 5000);
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-animate').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Compteur de messages non lus
+        async function updateUnreadCount() {
+            try {
+                const response = await fetch('/api/unread-count/');
+                const data = await response.json();
+                const badge = document.getElementById('unread-badge');
+                if (data.unread_count > 0) {
+                    badge.textContent = data.unread_count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération du compteur:', error);
+            }
+        }
+
+        // Mettre à jour le compteur toutes les 30 secondes si l'utilisateur est connecté
+        {% if user.is_authenticated %}
+            updateUnreadCount();
+            setInterval(updateUnreadCount, 30000);
+        {% endif %}
+
+        // Smooth scroll pour les ancres
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>

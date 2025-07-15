@@ -1,82 +1,737 @@
 {% extends "base.html" %}
 
-{% block title %}Mentorlink - Déposer une annonce{% endblock %}
+{% block title %}MentorLink - Publier une annonce{% endblock %}
 
 {% block content %}
-<h1>Déposer une annonce</h1>
-
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-
-    <!-- Champ Prix (supposé être un champ texte ou nombre) -->
-    <div>
-        <input type="id_prix" name="prix" id="id_prix" maxlength="20" step="any" min="0" />{% if form.prix.errors %}
-        <div class="error">
-        {{ form.prix.errors }}</div>
-        {% endif %}
-        <div id="compteur_prix">0 / 20 caractères</div>
-    </div>
-
-    <!-- Champ Image (pas de compteur, généralement fichier) -->
-    <div>
-        {{ form.image.label_tag }}
-        {{ form.image }}
-        {% if form.image.errors %}
-            <div class="error">{{ form.image.errors }}</div>
-        {% endif %}
-    </div>
-
-    <!-- Champ Métier -->
-    <div>
-        <label for="id_metier">Metier</label>
-        <textarea name="metier" id="id_metier" maxlength="50" rows="5" cols="40"></textarea>
-        {% if form.metier.errors %}
-            <div class="error">{{ form.metier.errors }}</div>
-        {% endif %}
-        <div id="compteur_metier">0 / 50 caractères</div>
-    </div>
-
-    <!-- Champ Adresse -->
-    <div>
-        <label for="id_adresse">Adresse</label>
-        <textarea name="adresse" id="id_adresse" maxlength="100" rows="5" cols="40"></textarea>
-        {% if form.adresse.errors %}
-            <div class="error">{{ form.adresse.errors }}</div>
-        {% endif %}
-        <div id="compteur_adresse">0 / 100 caractères</div>
-    </div>
-
-
-    <!-- Champ Description -->
-    <div>
-        <label for="id_description">Description</label>
-        <textarea name="description" id="id_description" maxlength="500" rows="5" cols="40"></textarea>
-        {% if form.description.errors %}
-            <div class="error">{{ form.description.errors }}</div>
-        {% endif %}
-        <div id="compteur_description">0 / 500 caractères</div>
-    </div>
-
-    <button type="submit">Déposer l'annonce</button>
-</form>
-
-<script>
-    // Fonction pour mettre à jour un compteur de caractères
-    function setCompteur(inputId, compteurId, max) {
-        const input = document.getElementById(inputId);
-        const compteur = document.getElementById(compteurId);
-        function update() {
-            compteur.textContent = input.value.length + " / " + max + " caractères";
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MentorLink - Publier une annonce</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configuration Tailwind inline -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff5f5',
+                            100: '#fed7d7',
+                            200: '#feb2b2',
+                            300: '#fc8181',
+                            400: '#f56565',
+                            500: '#ff6b6b',
+                            600: '#e53e3e',
+                            700: '#c53030',
+                            800: '#9b2c2c',
+                            900: '#742a2a'
+                        },
+                        secondary: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            200: '#99f6e4',
+                            300: '#5eead4',
+                            400: '#2dd4bf',
+                            500: '#4ecdc4',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a'
+                        }
+                    },
+                    fontFamily: {
+                        'display': ['Inter', 'system-ui', 'sans-serif'],
+                        'body': ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'float': 'float 3s ease-in-out infinite'
+                    },
+                    borderRadius: {
+                        'xl': '1rem',
+                        '2xl': '1.5rem'
+                    }
+                }
+            }
         }
-        input.addEventListener('input', update);
-        update();
-    }
+    </script>
+    
+    <style>
+        /* Import Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        
+        /* Variables CSS cohérentes */
+        :root {
+            --gradient-primary: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
+            --gradient-secondary: linear-gradient(135deg, #4ecdc4 0%, #45b7b8 100%);
+            --gradient-light: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --border-radius: 1rem;
+            --border-radius-lg: 1.5rem;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Animations keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Logo ML cohérent */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo-ml {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-primary);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+        
+        .logo-ml:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .logo-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.025em;
+        }
+        
+        /* Système de boutons cohérent */
+        .btn {
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #ff6b6b;
+            border: 2px solid #ff6b6b;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-secondary:hover {
+            background: #ff6b6b;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+        
+        .btn-outline:hover {
+            background: var(--gradient-light);
+            border-color: #ff6b6b;
+        }
+        
+        /* Navigation cohérente */
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: var(--transition);
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .nav-link:hover {
+            background: var(--gradient-light);
+            color: #ff6b6b;
+        }
+        
+        /* Formulaire cohérent avec contours visibles */
+        .form-container {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid #f3f4f6;
+            transition: var(--transition);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        /* Champs de formulaire avec contours visibles */
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #d1d5db;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+            color: #374151;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1), var(--shadow-md);
+        }
+        
+        .form-input:hover {
+            border-color: #9ca3af;
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+        
+        .form-file {
+            border: 2px dashed #d1d5db;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            text-align: center;
+            transition: var(--transition);
+            background: #f9fafb;
+        }
+        
+        .form-file:hover {
+            border-color: #ff6b6b;
+            background: var(--gradient-light);
+        }
+        
+        .form-file.dragover {
+            border-color: #ff6b6b;
+            background: var(--gradient-light);
+        }
+        
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        
+        /* Compteur de caractères */
+        .char-counter {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+            text-align: right;
+        }
+        
+        .char-counter.warning {
+            color: #f59e0b;
+        }
+        
+        .char-counter.danger {
+            color: #ef4444;
+        }
+        
+        /* Hero section cohérente */
+        .hero-bg {
+            background: var(--gradient-primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+        }
+        
+        /* Messages flash cohérents */
+        .alert {
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+        }
+        
+        /* Badges cohérents */
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            min-width: 1.25rem;
+            height: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+            animation: pulse 2s infinite;
+        }
+        
+        /* Navigation mobile cohérente */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: var(--transition);
+            background: white;
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        
+        /* Typographie cohérente */
+        .text-gradient {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Sections cohérentes */
+        .section {
+            padding: 4rem 0;
+        }
+        
+        .section-alt {
+            background: #f9fafb;
+        }
+        
+        /* Responsive utilities */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
 
-    // Initialisation des compteurs pour chaque champ texte
-    // Adaptez les IDs selon vos champs générés par Django si besoin
-    setCompteur('id_prix', 'compteur_prix', 20);           // Limite à adapter selon votre modèle
-    setCompteur('id_metier', 'compteur_metier', 50);
-    setCompteur('id_adresse', 'compteur_adresse', 100);
-    setCompteur('id_description', 'compteur_description', 500);
-</script>
+<body class="font-body bg-gray-50 text-gray-900">
+
+    <!-- Messages flash cohérents -->
+    {% if messages %}
+        <div class="fixed top-24 right-4 z-50 space-y-2" id="flash-messages">
+            {% for message in messages %}
+                <div class="alert border-l-4 {% if message.tags == 'success' %}border-green-500 bg-green-50 text-green-700{% elif message.tags == 'error' %}border-red-500 bg-red-50 text-red-700{% elif message.tags == 'warning' %}border-yellow-500 bg-yellow-50 text-yellow-700{% else %}border-blue-500 bg-blue-50 text-blue-700{% endif %} p-4 animate-slide-up">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            {% if message.tags == 'success' %}
+                                <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            {% elif message.tags == 'error' %}
+                                <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                            {% else %}
+                                <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                            {% endif %}
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium">{{ message }}</p>
+                        </div>
+                        <button type="button" class="ml-auto pl-3" onclick="this.parentElement.parentElement.remove()">
+                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Contenu principal -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-bg text-white py-16 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="text-center animate-fade-in">
+                    <h1 class="text-3xl md:text-5xl font-bold mb-4 leading-tight">
+                        Publier une <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">annonce</span>
+                    </h1>
+                    <p class="text-lg md:text-xl mb-6 text-gray-100 max-w-2xl mx-auto">
+                        Partagez votre expertise et aidez d'autres professionnels à développer leurs compétences.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Formulaire de publication -->
+        <section class="section section-alt">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="form-container p-8 animate-fade-in">
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-2">
+                            Créez votre <span class="text-gradient">profil de mentor</span>
+                        </h2>
+                        <p class="text-gray-600">
+                            Remplissez les informations ci-dessous pour publier votre annonce de mentorat.
+                        </p>
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data" class="space-y-6">
+                        {% csrf_token %}
+                        
+                        <!-- Informations personnelles -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-group">
+                                <label for="id_metier" class="form-label">
+                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6"/>
+                                    </svg>
+                                    Métier / Spécialité *
+                                </label>
+                                <input type="text" name="metier" id="id_metier" class="form-input" placeholder="Ex: Développeur Full-Stack, Designer UX/UI..." maxlength="50" required>
+                                <div id="compteur_metier" class="char-counter">0 / 50 caractères</div>
+                                {% if form.metier.errors %}
+                                    <div class="error-message">{{ form.metier.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="id_prix" class="form-label">
+                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                                    </svg>
+                                    Prix par heure (€) *
+                                </label>
+                                <input type="text" name="prix" id="id_prix" class="form-input" placeholder="Ex: 50" maxlength="20" required>
+                                <div id="compteur_prix" class="char-counter">0 / 20 caractères</div>
+                                {% if form.prix.errors %}
+                                    <div class="error-message">{{ form.prix.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Localisation - Pleine largeur -->
+                        <div class="form-group">
+                            <label for="id_adresse" class="form-label">
+                                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                Adresse / Localisation *
+                            </label>
+                            <input type="text" name="adresse" id="id_adresse" class="form-input" placeholder="Ex: Paris, France ou Remote" maxlength="100" required>
+                            <div id="compteur_adresse" class="char-counter">0 / 100 caractères</div>
+                            {% if form.adresse.errors %}
+                                <div class="error-message">{{ form.adresse.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Description - Pleine largeur -->
+                        <div class="form-group">
+                            <label for="id_description" class="form-label">
+                                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                </svg>
+                                Description de votre expertise
+                            </label>
+                            <textarea name="description" id="id_description" class="form-input form-textarea" placeholder="Décrivez votre expérience, vos compétences et ce que vous pouvez apporter à vos mentorés..." maxlength="500"></textarea>
+                            <div id="compteur_description" class="char-counter">0 / 500 caractères</div>
+                            <p class="text-sm text-gray-500 mt-1">
+                                Décrivez votre expérience, vos compétences et ce que vous pouvez apporter à vos mentorés.
+                            </p>
+                            {% if form.description.errors %}
+                                <div class="error-message">{{ form.description.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Photo de profil -->
+                        <div class="form-group">
+                            <label for="id_image" class="form-label">
+                                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                Photo de profil
+                            </label>
+                            <div class="form-file" id="file-drop-zone">
+                                <input type="file" name="image" id="id_image" accept="image/*" class="hidden">
+                                <div class="mt-2">
+                                    <svg class="w-8 h-8 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                    </svg>
+                                    <p class="text-sm text-gray-600">
+                                        <span class="font-medium text-primary-600 cursor-pointer" onclick="document.getElementById('id_image').click()">Cliquez pour télécharger</span> ou glissez-déposez
+                                    </p>
+                                    <p class="text-xs text-gray-500">PNG, JPG, GIF jusqu'à 10MB</p>
+                                </div>
+                            </div>
+                            {% if form.image.errors %}
+                                <div class="error-message">{{ form.image.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Boutons d'action -->
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+                            <button type="submit" class="btn btn-primary px-8 py-3 text-lg">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                </svg>
+                                Publier mon annonce
+                            </button>
+                            <a href="{% url 'home' %}" class="btn btn-secondary px-8 py-3 text-lg">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                                Annuler
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section d'aide -->
+        <section class="section bg-white">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                    Besoin d'aide pour créer votre <span class="text-gradient">annonce parfaite</span> ?
+                </h3>
+                <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
+                    Consultez nos conseils pour optimiser votre profil et attirer plus de mentorés.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-6 bg-gray-50 rounded-xl">
+                        <svg class="w-8 h-8 text-primary-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                        <h4 class="font-semibold text-gray-900 mb-2">Soyez spécifique</h4>
+                        <p class="text-sm text-gray-600">Décrivez précisément votre domaine d'expertise et vos compétences.</p>
+                    </div>
+                    <div class="p-6 bg-gray-50 rounded-xl">
+                        <svg class="w-8 h-8 text-primary-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                        <h4 class="font-semibold text-gray-900 mb-2">Montrez votre passion</h4>
+                        <p class="text-sm text-gray-600">Exprimez votre motivation à aider et transmettre vos connaissances.</p>
+                    </div>
+                    <div class="p-6 bg-gray-50 rounded-xl">
+                        <svg class="w-8 h-8 text-primary-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <h4 class="font-semibold text-gray-900 mb-2">Photo professionnelle</h4>
+                        <p class="text-sm text-gray-600">Ajoutez une photo de qualité pour inspirer confiance.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Scripts -->
+    <script>
+        // Menu mobile
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const closeMobileMenu = document.getElementById('close-mobile-menu');
+
+        mobileMenuButton?.addEventListener('click', () => {
+            mobileMenu.classList.add('open');
+        });
+
+        closeMobileMenu?.addEventListener('click', () => {
+            mobileMenu.classList.remove('open');
+        });
+
+        // Fermer le menu mobile en cliquant à l'extérieur
+        document.addEventListener('click', (e) => {
+            if (!mobileMenu.contains(e.target) && !mobileMenuButton.contains(e.target)) {
+                mobileMenu.classList.remove('open');
+            }
+        });
+
+        // Auto-hide flash messages
+        setTimeout(() => {
+            const flashMessages = document.getElementById('flash-messages');
+            if (flashMessages) {
+                flashMessages.style.opacity = '0';
+                setTimeout(() => flashMessages.remove(), 300);
+            }
+        }, 5000);
+
+        // Fonction pour mettre à jour un compteur de caractères avec couleurs
+        function setCompteur(inputId, compteurId, max) {
+            const input = document.getElementById(inputId);
+            const compteur = document.getElementById(compteurId);
+            
+            function update() {
+                // Limiter la saisie au maximum autorisé
+                if (input.value.length > max) {
+                    input.value = input.value.substring(0, max);
+                }
+                
+                const currentLength = input.value.length;
+                compteur.textContent = currentLength + " / " + max + " caractères";
+                
+                // Changer la couleur selon le pourcentage utilisé
+                compteur.classList.remove('warning', 'danger');
+                if (currentLength >= max * 0.9) {
+                    compteur.classList.add('danger');
+                } else if (currentLength >= max * 0.7) {
+                    compteur.classList.add('warning');
+                }
+            }
+            
+            input.addEventListener('input', update);
+            input.addEventListener('keydown', function(e) {
+                // Empêcher la saisie si la limite est atteinte (sauf touches spéciales)
+                if (input.value.length >= max && 
+                    e.key !== 'Backspace' && 
+                    e.key !== 'Delete' && 
+                    e.key !== 'ArrowLeft' && 
+                    e.key !== 'ArrowRight' && 
+                    e.key !== 'ArrowUp' && 
+                    e.key !== 'ArrowDown' && 
+                    e.key !== 'Tab' && 
+                    !e.ctrlKey && 
+                    !e.metaKey) {
+                    e.preventDefault();
+                }
+            });
+            
+            update(); // Initialiser le compteur
+        }
+
+        // Initialisation des compteurs pour chaque champ texte
+        setCompteur('id_prix', 'compteur_prix', 20);
+        setCompteur('id_metier', 'compteur_metier', 50);
+        setCompteur('id_adresse', 'compteur_adresse', 100);
+        setCompteur('id_description', 'compteur_description', 500);
+
+        // Drag and drop pour les fichiers
+        const fileDropZone = document.getElementById('file-drop-zone');
+        const fileInput = document.getElementById('id_image');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            fileDropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            fileDropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            fileDropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            fileDropZone.classList.add('dragover');
+        }
+
+        function unhighlight(e) {
+            fileDropZone.classList.remove('dragover');
+        }
+
+        fileDropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            fileInput.files = files;
+        }
+
+        // Validation du formulaire
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.classList.add('border-red-500');
+                } else {
+                    field.classList.remove('border-red-500');
+                }
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                alert('Veuillez remplir tous les champs obligatoires.');
+            }
+        });
+    </script>
+</body>
+</html>
 {% endblock %}

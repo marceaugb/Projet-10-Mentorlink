@@ -1,89 +1,670 @@
 {% extends "base.html" %}
 
-{% block title %}Mentorlink - {{ titre }}{% endblock %}
+{% block title %}MentorLink - {{ titre }}{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="card shadow-lg p-4">
-        <h2 class="text-center mb-4 text-primary">{{ titre }}</h2>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MentorLink - {{ titre }}</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configuration Tailwind inline -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff5f5',
+                            100: '#fed7d7',
+                            200: '#feb2b2',
+                            300: '#fc8181',
+                            400: '#f56565',
+                            500: '#ff6b6b',
+                            600: '#e53e3e',
+                            700: '#c53030',
+                            800: '#9b2c2c',
+                            900: '#742a2a'
+                        },
+                        secondary: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            200: '#99f6e4',
+                            300: '#5eead4',
+                            400: '#2dd4bf',
+                            500: '#4ecdc4',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a'
+                        }
+                    },
+                    fontFamily: {
+                        'display': ['Inter', 'system-ui', 'sans-serif'],
+                        'body': ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.6s ease-out',
+                        'float': 'float 3s ease-in-out infinite'
+                    },
+                    borderRadius: {
+                        'xl': '1rem',
+                        '2xl': '1.5rem'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Import Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         
-        {% if annonces %}
-            <div class="row">
-                {% for annonce in annonces %}
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        {% if annonce.image %}
-                            <img src="{{ annonce.image.url }}" class="card-img-top" alt="{{ annonce.metier }}" style="height: 200px; object-fit: cover;">
-                        {% else %}
-                            <div class="bg-light text-center py-5" style="height: 200px;">
-                                <span class="text-muted">Pas d'image</span>
-                            </div>
-                        {% endif %}
-                        <div class="card-body">
-                            <h5 class="card-title">{{ annonce.metier }}</h5>
-                            <p class="card-text"><strong>Prix :</strong> {{ annonce.prix }} €</p>
-                            <p class="card-text"><strong>Adresse :</strong> {{ annonce.adresse }}</p>
-                            <p class="card-text text-truncate"><strong>Description :</strong> {{ annonce.description }}</p>
-                        </div>
-                        <div class="card-footer bg-white p-2">
-                            <br><a href="{% url 'annonce_detail' annonce.id %}" class="btn btn-orange btn-sm w-100 mb-2">Voir détails</a>
-                            {% if request.user.id == annonce.id_personnes.id %}
-                                <div class="d-flex justify-content-between mb-0">
-                                    <br><a href="{% url 'modifier_annonce' annonce.id %}" class="btn btn-outline-primary btn-sm flex-grow-1 me-1">Modifier</a>
-                                    <br><a href="{% url 'supprimer_annonce' annonce.id %}" class="btn btn-outline-danger btn-sm flex-grow-1">Supprimer</a>
-                                </div>
+        /* Variables CSS cohérentes */
+        :root {
+            --gradient-primary: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
+            --gradient-secondary: linear-gradient(135deg, #4ecdc4 0%, #45b7b8 100%);
+            --gradient-light: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --border-radius: 1rem;
+            --border-radius-lg: 1.5rem;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Animations keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Logo ML cohérent */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo-ml {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-primary);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+        
+        .logo-ml:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .logo-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: -0.025em;
+        }
+        
+        /* Système de boutons cohérent */
+        .btn {
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #ff6b6b;
+            border: 2px solid #ff6b6b;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .btn-secondary:hover {
+            background: #ff6b6b;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #ff6b6b;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+        
+        .btn-outline:hover {
+            background: var(--gradient-light);
+            border-color: #ff6b6b;
+        }
+        
+        /* Navigation cohérente */
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: var(--transition);
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .nav-link:hover {
+            background: var(--gradient-light);
+            color: #ff6b6b;
+        }
+        
+        /* Cards cohérentes */
+        .card {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            border: 1px solid #f3f4f6;
+        }
+        
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .card-annonce {
+            @apply card;
+        }
+        
+        /* Messages flash cohérents */
+        .alert {
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+        }
+        
+        /* Badges cohérents */
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            min-width: 1.25rem;
+            height: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+            animation: pulse 2s infinite;
+        }
+        
+        /* Navigation mobile cohérente */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: var(--transition);
+            background: white;
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        
+        /* Typographie cohérente */
+        .text-gradient {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Sections cohérentes */
+        .section {
+            padding: 4rem 0;
+        }
+        
+        .section-alt {
+            background: #f9fafb;
+        }
+        
+        /* Responsive utilities */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* Breadcrumb */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+        
+        .breadcrumb a {
+            color: #ff6b6b;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .breadcrumb a:hover {
+            color: #e53e3e;
+        }
+        
+        /* Avatar */
+        .avatar {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        
+        .avatar-lg {
+            width: 6rem;
+            height: 6rem;
+            font-size: 2rem;
+        }
+        
+        /* Scroll animations cohérentes */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+        
+        .scroll-animate.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Stats */
+        .stat-card {
+            background: var(--gradient-light);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 107, 107, 0.2);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+
+<body class="font-body bg-gray-50 text-gray-900">
+
+    <!-- Messages flash cohérents -->
+    {% if messages %}
+        <div class="fixed top-24 right-4 z-50 space-y-2" id="flash-messages">
+            {% for message in messages %}
+                <div class="alert border-l-4 {% if message.tags == 'success' %}border-green-500 bg-green-50 text-green-700{% elif message.tags == 'error' %}border-red-500 bg-red-50 text-red-700{% elif message.tags == 'warning' %}border-yellow-500 bg-yellow-50 text-yellow-700{% else %}border-blue-500 bg-blue-50 text-blue-700{% endif %} p-4 animate-slide-up">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            {% if message.tags == 'success' %}
+                                <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            {% elif message.tags == 'error' %}
+                                <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                            {% else %}
+                                <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
                             {% endif %}
                         </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium">{{ message }}</p>
+                        </div>
+                        <button type="button" class="ml-auto pl-3" onclick="this.parentElement.parentElement.remove()">
+                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="alert alert-info text-center">
-                {% if user_id is None %}
-                    Vous n'avez pas encore déposé d'annonce.
-                    <br><a href="{% url 'depose_annonce' %}" class="alert-link">Déposer une annonce</a>
-                {% else %}
-                    Cet utilisateur n'a pas encore déposé d'annonce.
-                {% endif %}
-            </div>
-        {% endif %}
-    </div>
-</div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
-<style>
-    body {
-        background: #ffffff;
-        color: #333;
-        font-family: 'Arial', sans-serif;
-    }
-    .card {
-        border-radius: 15px;
-        background: #ffffff;
-        color: #333;
-    }
-    .btn-orange {
-        background-color: #ff9800;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        color: white;
-    }
-    .btn-orange:hover {
-        background-color: #e68900;
-    }
-    h2 {
-        font-weight: bold;
-    }
-    .text-truncate {
-        max-width: 100%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .btn-block {
-        display: block;
-        width: 100%;
-    }
-</style>
+    <!-- Contenu principal -->
+    <main class="section">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Breadcrumb -->
+            <div class="breadcrumb animate-fade-in">
+                <a href="{% url 'home' %}">Accueil</a>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+                <a href="{% url 'search' %}">Mentors</a>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+                <span>{{ titre }}</span>
+            </div>
+
+            <!-- En-tête du profil -->
+            <div class="card p-8 mb-8 animate-fade-in">
+                <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+                    <!-- Avatar -->
+                    <div class="avatar avatar-lg">
+                        {% if utilisateur.first_name and utilisateur.last_name %}
+                            {{ utilisateur.first_name|first }}{{ utilisateur.last_name|first }}
+                        {% else %}
+                            {{ utilisateur.username|first }}
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Informations du mentor -->
+                    <div class="flex-1 text-center md:text-left">
+                        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                            {% if utilisateur.first_name and utilisateur.last_name %}
+                                {{ utilisateur.first_name }} {{ utilisateur.last_name }}
+                            {% else %}
+                                {{ utilisateur.username }}
+                            {% endif %}
+                        </h1>
+                        <p class="text-xl text-gray-600 mb-4">Mentor professionnel</p>
+                        
+                        <!-- Statistiques -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="stat-card">
+                                <div class="stat-number">{{ annonces.count }}</div>
+                                <div class="stat-label">Annonce{{ annonces.count|pluralize }}</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">4.9</div>
+                                <div class="stat-label">Note moyenne</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">150+</div>
+                                <div class="stat-label">Sessions</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number">98%</div>
+                                <div class="stat-label">Satisfaction</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="flex flex-col gap-3">
+                        <a href="{% url 'home' %}" class="btn btn-secondary">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                            </svg>
+                            Retour aux annonces
+                        </a>
+                        {% if user != utilisateur %}
+                            <a href="{% url 'start_private_chat' annonces.first.id %}" class="btn btn-primary">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                </svg>
+                                Contacter
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Titre de la section -->
+            <div class="mb-8 scroll-animate">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
+                    {% if annonces.count > 1 %}
+                        Toutes les annonces de ce mentor
+                    {% else %}
+                        L'annonce de ce mentor
+                    {% endif %}
+                    <span class="text-gradient">({{ annonces.count }})</span>
+                </h2>
+                <p class="text-gray-600">
+                    Découvrez toutes les expertises proposées par ce mentor professionnel.
+                </p>
+            </div>
+
+            <!-- Grille des annonces -->
+            {% if annonces %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {% for annonce in annonces %}
+                        <article class="card-annonce p-6 scroll-animate" style="animation-delay: {{ forloop.counter0|floatformat:1 }}s;">
+                            <!-- Image du mentor -->
+                            {% if annonce.image %}
+                                <div class="w-16 h-16 mx-auto mb-4 rounded-full overflow-hidden bg-gradient-to-br from-primary-500 to-secondary-500 p-0.5">
+                                    <img src="{{ annonce.image.url }}" alt="Photo de {{ annonce.metier }}" class="w-full h-full object-cover rounded-full bg-white" loading="lazy">
+                                </div>
+                            {% else %}
+                                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6"/>
+                                    </svg>
+                                </div>
+                            {% endif %}
+
+                            <!-- Informations de l'annonce -->
+                            <div class="text-center mb-4">
+                                <h3 class="text-xl font-semibold text-gray-900 mb-2">
+                                    {{ annonce.metier }}
+                                </h3>
+                                <div class="text-2xl font-bold text-gradient mb-2">
+                                    {{ annonce.prix }}€<span class="text-sm text-gray-500 font-normal">/h</span>
+                                </div>
+                            </div>
+
+                            <!-- Description -->
+                            {% if annonce.description %}
+                                <p class="text-gray-600 text-sm mb-4 line-clamp-3">{{ annonce.description|truncatewords:15 }}</p>
+                            {% endif %}
+
+                            <!-- Localisation -->
+                            <div class="flex items-center justify-center text-gray-500 text-sm mb-4">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                {{ annonce.adresse|truncatewords:3 }}
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="flex space-x-2">
+                                <a href="{% url 'annonce_detail' annonce.id %}" class="btn btn-outline text-sm px-4 py-2 flex-1">
+                                    Voir détails
+                                </a>
+                                {% if user.is_authenticated and user != annonce.id_personnes %}
+                                    <a href="{% url 'start_private_chat' annonce.id %}" class="btn btn-primary text-sm px-4 py-2 flex-1">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                        </svg>
+                                        Contacter
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- État vide -->
+                <div class="text-center py-16">
+                    <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                    </svg>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">Aucune annonce trouvée</h3>
+                    <p class="text-gray-600 mb-6">Ce mentor n'a pas encore publié d'annonces.</p>
+                    <a href="{% url 'home' %}" class="btn btn-primary">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        Découvrir d'autres mentors
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Footer cohérent -->
+    <footer class="bg-gray-900 text-white section">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Logo et description -->
+                <div class="md:col-span-2">
+                    <div class="logo-container mb-4">
+                        <div class="logo-ml">ML</div>
+                        <span class="logo-text text-white">MentorLink</span>
+                    </div>
+                    <p class="text-gray-400 mb-6 max-w-md">
+                        La plateforme de référence pour connecter mentors et mentorés. Développez vos compétences et accélérez votre carrière.
+                    </p>
+                </div>
+                
+                <!-- Liens rapides -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Liens rapides</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{% url 'search' %}" class="text-gray-400 hover:text-white transition-colors duration-200">Rechercher</a></li>
+                        {% if user.is_authenticated %}
+                            <li><a href="{% url 'depose_annonce' %}" class="text-gray-400 hover:text-white transition-colors duration-200">Publier</a></li>
+                            <li><a href="{% url 'profil' %}" class="text-gray-400 hover:text-white transition-colors duration-200">Mon profil</a></li>
+                        {% else %}
+                            <li><a href="{% url 'signup' %}" class="text-gray-400 hover:text-white transition-colors duration-200">Inscription</a></li>
+                            <li><a href="{% url 'login' %}" class="text-gray-400 hover:text-white transition-colors duration-200">Connexion</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <!-- Support -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Support</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Centre d'aide</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Conditions d'utilisation</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors duration-200">Politique de confidentialité</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 MentorLink. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Menu mobile
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const closeMobileMenu = document.getElementById('close-mobile-menu');
+
+        mobileMenuButton?.addEventListener('click', () => {
+            mobileMenu.classList.add('open');
+        });
+
+        closeMobileMenu?.addEventListener('click', () => {
+            mobileMenu.classList.remove('open');
+        });
+
+        // Fermer le menu mobile en cliquant à l'extérieur
+        document.addEventListener('click', (e) => {
+            if (!mobileMenu.contains(e.target) && !mobileMenuButton.contains(e.target)) {
+                mobileMenu.classList.remove('open');
+            }
+        });
+
+        // Auto-hide flash messages
+        setTimeout(() => {
+            const flashMessages = document.getElementById('flash-messages');
+            if (flashMessages) {
+                flashMessages.style.opacity = '0';
+                setTimeout(() => flashMessages.remove(), 300);
+            }
+        }, 5000);
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-animate').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
 {% endblock %}
