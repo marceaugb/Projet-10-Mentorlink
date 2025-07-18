@@ -1,107 +1,168 @@
-{% extends "home.html" %}
+{% extends "base.html" %}
 
-{% block title %}Mentorlink - Inscription{% endblock %}
+{% block title %}MentorLink - Inscription{% endblock %}
 
 {% block content %}
-
-<h2>Inscription</h2>
-
-<form method="post">
-    {% csrf_token %}
+<div style="max-width: 400px; margin: 50px auto; padding: 20px; background: #f8f9fa; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+    <h2 style="text-align: center; color: #333; margin-bottom: 30px;">Inscription</h2>
     
-    <div>
-        <label for="id_username">Nom d'utilisateur:</label>
-        {{ form.username }}
-        {{ form.username.errors }}
-    </div>
+    <form method="post" style="display: flex; flex-direction: column; gap: 15px;">
+        {% csrf_token %}
+        
+        <div>
+            <label for="{{ form.username.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">
+                Nom d'utilisateur:
+            </label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <div style="color: #dc3545; font-size: 14px; margin-top: 5px;">
+                    {{ form.username.errors }}
+                </div>
+            {% endif %}
+            {% if form.username.help_text %}
+                <small style="color: #6c757d; font-size: 12px;">{{ form.username.help_text }}</small>
+            {% endif %}
+        </div>
 
-    <div>
-        <label for="id_password1">Mot de passe:</label>
-        {{ form.password1 }}
-        {{ form.password1.errors }}
-    </div>
+        <div>
+            <label for="{{ form.email.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">
+                Email:
+            </label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div style="color: #dc3545; font-size: 14px; margin-top: 5px;">
+                    {{ form.email.errors }}
+                </div>
+            {% endif %}
+            {% if form.email.help_text %}
+                <small style="color: #6c757d; font-size: 12px;">{{ form.email.help_text }}</small>
+            {% endif %}
+        </div>
 
-    <div>
-        <label for="id_password2">Confirmer le mot de passe:</label>
-        {{ form.password2 }}
-        {{ form.password2.errors }}
-    </div>
+        <div>
+            <label for="{{ form.last_name.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">
+                Nom:
+            </label>
+            {{ form.last_name }}
+            {% if form.last_name.errors %}
+                <div style="color: #dc3545; font-size: 14px; margin-top: 5px;">
+                    {{ form.last_name.errors }}
+                </div>
+            {% endif %}
+            {% if form.last_name.help_text %}
+                <small style="color: #6c757d; font-size: 12px;">{{ form.last_name.help_text }}</small>
+            {% endif %}
+        </div>
 
-    <div>
-        <label for="id_email">Email:</label>
-        {{ form.email }}
-        {{ form.email.errors }}
-    </div>
+        <div>
+            <label for="{{ form.first_name.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">
+                Prénom:
+            </label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}
+                <div style="color: #dc3545; font-size: 14px; margin-top: 5px;">
+                    {{ form.first_name.errors }}
+                </div>
+            {% endif %}
+            {% if form.first_name.help_text %}
+                <small style="color: #6c757d; font-size: 12px;">{{ form.first_name.help_text }}</small>
+            {% endif %}
+        </div>
+        
+        <div>
+            <label for="{{ form.civilite.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">
+                Civilité:
+            </label>
+            {{ form.civilite }}
+            {% if form.civilite.errors %}
+                <div style="color: #dc3545; font-size: 14px; margin-top: 5px;">
+                    {{ form.civilite.errors }}
+                </div>
+            {% endif %}
+            {% if form.civilite.help_text %}
+                <small style="color: #6c757d; font-size: 12px;">{{ form.civilite.help_text }}</small>
+            {% endif %}
+        </div>
 
-    <div>
-        <label for="id_last_name">Nom:</label>
-        {{ form.last_name }}
-        {{ form.last_name.errors }}
-    </div>
+        <div>
+            <label for="{{ form.adresse.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">
+                Adresse:
+            </label>
+            {{ form.adresse }}
+            {% if form.adresse.errors %}
+                <div style="color: #dc3545; font-size: 14px; margin-top: 5px;">
+                    {{ form.adresse.errors }}
+                </div>
+            {% endif %}
+            {% if form.adresse.help_text %}
+                <small style="color: #6c757d; font-size: 12px;">{{ form.adresse.help_text }}</small>
+            {% endif %}
+        </div>
 
-    <div>
-        <label for="id_first_name">Prénom:</label>
-        {{ form.first_name }}
-        {{ form.first_name.errors }}
-    </div>
-
-    <div class="form-group">
-        <label for="id_date_naissance">Date de naissance</label>
-        <input type="date" id="date_naissance" name="date_naissance" 
+        <div>
+            <label for="{{ form.date_naissance.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">
+                Date de naissance:
+            </label>
+            <input type="date" id="date_naissance" name="date_naissance" 
                value="{{ user.date_naissance }}" required>
-        {{ form.date_naissance.errors }}
-    </div>
+            {{ form.date_naissance.errors }}
+        </div>
 
-    <div>
-        <label for="id_civilite">Civilité:</label>
-        {{ form.civilite }}
-        {{ form.civilite.errors }}
-    </div>
+        <div>
+            <label for="{{ form.password1.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">
+                Mot de passe:
+            </label>
+            {{ form.password1 }}
+            {% if form.password1.errors %}
+                <div style="color: #dc3545; font-size: 14px; margin-top: 5px;">
+                    {{ form.password1.errors }}
+                </div>
+            {% endif %}
+            {% if form.password1.help_text %}
+                <small style="color: #6c757d; font-size: 12px;">{{ form.password1.help_text }}</small>
+            {% endif %}
+        </div>
+        
+        <div>
+            <label for="{{ form.password2.id_for_label }}" style="display: block; margin-bottom: 5px; font-weight: bold; color: #555;">
+                Confirmer le mot de passe:
+            </label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+                <div style="color: #dc3545; font-size: 14px; margin-top: 5px;">
+                    {{ form.password2.errors }}
+                </div>
+            {% endif %}
+        </div>
+        
+        <button type="submit" style="background: #28a745; color: white; padding: 12px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer;">
+            Créer mon compte
+        </button>
+    </form>
+    
+    <p style="text-align: center; margin-top: 20px;">
+        Déjà membre ? <a href="{% url 'login' %}" style="color: #007bff; text-decoration: none;">Connectez-vous</a>
+    </p>
+</div>
 
-    <div>
-        <label for="id_adresse">Adresse:</label>
-        {{ form.adresse }}
-        {{ form.adresse.errors }}
-    </div>
+<style>
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
 
-    <button type="submit">S'inscrire</button>
-</form>
+input:focus {
+    outline: none;
+    border-color: #28a745;
+    box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.25);
+}
 
-{% if form.errors %}
-    <p style="color: red;">Veuillez corriger les erreurs ci-dessus.</p>
-{% endif %}
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        let dateInput = document.getElementById("id_date_naissance");
-        if (!dateInput) return;
-
-        let today = new Date();
-        let minDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
-
-        // Bloquer les dates pour moins de 15 ans
-        dateInput.max = minDate.toISOString().split("T")[0];
-
-        document.querySelector("form").addEventListener("submit", function(event) {
-            let birthDate = new Date(dateInput.value);
-            if (isNaN(birthDate)) {
-                alert("Veuillez entrer votre date de naissance !");
-                event.preventDefault();
-                return;
-            }
-
-            let age = today.getFullYear() - birthDate.getFullYear();
-            let m = today.getMonth() - birthDate.getMonth();
-            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-                age--;
-            }
-
-            if (age < 18) {
-                alert("Vous devez avoir au moins 18 ans !");
-                event.preventDefault();
-            }
-        });
-    });
-</script>
-
+button:hover {
+    background: #218838 !important;
+}
+</style>
 {% endblock %}
